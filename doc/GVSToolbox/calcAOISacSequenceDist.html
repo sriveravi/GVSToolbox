@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcAOISacSequenceDist</title>
+  <meta name="keywords" content="calcAOISacSequenceDist">
+  <meta name="description" content="calculate matrix representing the sequence of AOIs saccaded to">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; calcAOISacSequenceDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>calcAOISacSequenceDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculate matrix representing the sequence of AOIs saccaded to</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ AOISequence ] =calcAOISacSequenceDist( sacStruct, aoiCenter, maxDist, maxSaccades ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculate matrix representing the sequence of AOIs saccaded to
+ 
+ Syntax: [ AOISequence ] =calcAOISacSequence( eyePos, aoiCenter, maxDist, maxSaccades) 
+ 
+ Inputs:
+  sacStruct: returned from codeSaccadesDist
+  aoiCenter: coordinates of AOI in image scale, returned by 'returnAOICenters.m'
+  maxDist: maximum distance to a nearest AOI, anything further
+   considered not part of any AOI, returned by 'returnAOICenters.m'
+  maxSaccades: number of saccades in the sequence to keep
+ 
+ Outputs:
+  AOISequence: matrix (numAOI x numFix) with an indicator (1) for
+       in each column corresponding to the AOI of interest.  If no
+       AOI, it will be an all 0;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>	Notes: calculates 2-norm distance from target vector to all query vectors</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="extractVarsDist.html" class="code" title="function [ featureVect,  varParams ] = extractVarsDist( trackCell, aoiPositions, maxDist, relevantAOIs, varParams )">extractVarsDist</a>	extract all variables from a cell of eye tracks</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% calculate matrix representing the sequence of AOIs saccaded to</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Syntax: [ AOISequence ] =calcAOISacSequence( eyePos, aoiCenter, maxDist, maxSaccades)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%  sacStruct: returned from codeSaccadesDist</span>
+0007 <span class="comment">%  aoiCenter: coordinates of AOI in image scale, returned by 'returnAOICenters.m'</span>
+0008 <span class="comment">%  maxDist: maximum distance to a nearest AOI, anything further</span>
+0009 <span class="comment">%   considered not part of any AOI, returned by 'returnAOICenters.m'</span>
+0010 <span class="comment">%  maxSaccades: number of saccades in the sequence to keep</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%  AOISequence: matrix (numAOI x numFix) with an indicator (1) for</span>
+0014 <span class="comment">%       in each column corresponding to the AOI of interest.  If no</span>
+0015 <span class="comment">%       AOI, it will be an all 0;</span>
+0016 
+0017 
+0018 <a name="_sub0" href="#_subfunctions" class="code">function [ AOISequence ] =calcAOISacSequenceDist( sacStruct, aoiCenter, maxDist, maxSaccades ) </a>
+0019 
+0020 <span class="comment">% initialize some paramters</span>
+0021 <span class="keyword">if</span> nargin &lt; 4 || isempty( maxSaccades )
+0022     maxSaccades = 3;
+0023 <span class="keyword">end</span>
+0024 
+0025 
+0026 <span class="comment">% % saccadeVec = sacStruct.saccadeVec;</span>
+0027 <span class="comment">% % startSacPos = sacStruct.startSacPos;</span>
+0028 endSacPos = sacStruct.endSacPos;
+0029 
+0030 
+0031 <span class="comment">% % % scale eye tracks(using default value ), calculate fixations</span>
+0032 <span class="comment">% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] );</span>
+0033 <span class="comment">% % [ saccadeVec startSacPos endSacPos  ] = codeSaccades( eyePos);</span>
+0034 
+0035 <span class="comment">% initialize some variables</span>
+0036 numAOI = size(aoiCenter,2);
+0037 numSaccades = size( endSacPos,2);
+0038 AOIOrderList = zeros(numSaccades,1); 
+0039 effectivNumSaccades = 0;
+0040 
+0041 <span class="comment">% find AOI fixation sequence</span>
+0042 <span class="keyword">for</span> i1 = 1:numSaccades  
+0043     dist = <a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>( endSacPos(:,i1), aoiCenter); <span class="comment">% 2-norm</span>
+0044     [minDist minIdx] = min( dist);    
+0045     <span class="keyword">if</span> minDist &lt; maxDist         
+0046         effectivNumSaccades = effectivNumSaccades+1;        
+0047         AOIOrderList(effectivNumSaccades) = minIdx;
+0048     <span class="keyword">end</span>
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="comment">% code as a matrix of indicator variables</span>
+0052 <span class="keyword">if</span> effectivNumSaccades &gt;0  
+0053     AOISequence = zeros( numAOI, maxSaccades);     
+0054     <span class="keyword">for</span> i1 = 1:min(effectivNumSaccades, maxSaccades) 
+0055         AOISequence(AOIOrderList(i1),i1) = 1; <span class="comment">% indicator for AOI (1)</span>
+0056     <span class="keyword">end</span>
+0057     
+0058 <span class="keyword">else</span> <span class="comment">% all 0 if no relevant AOI</span>
+0059     AOISequence = zeros( numAOI,maxSaccades);
+0060 <span class="keyword">end</span>
+0061 
+0062 
+0063 
+0064</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

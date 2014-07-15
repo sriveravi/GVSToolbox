@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calc2Dist</title>
+  <meta name="keywords" content="calc2Dist">
+  <meta name="description" content="Notes: calculates 2-norm distance from target vector to all query vectors">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; calc2Dist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>calc2Dist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Notes: calculates 2-norm distance from target vector to all query vectors</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function dist = calc2Dist( target, query) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Notes: calculates 2-norm distance from target vector to all query vectors
+
+ syntax:  dist = calcEuclidDist( target, query)
+
+ Inputs:
+   target: (d by 1) vector of the target vector
+   query: (d by N) matrix of the query vectors (dimensionality is d, num
+       samples is N )
+ 
+ Outputs:
+   dist: vector of all 2-Norm distances</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="calcAOIFixDensityDist.html" class="code" title="function [ AOIDensity effectivNumFixation]  = calcAOIFixDensityDist( fixStruct, aoiCenter, maxDist )">calcAOIFixDensityDist</a>	calculate fixation density at the AOIs</li><li><a href="calcAOIFixDistHistDist.html" class="code" title="function histMatrix =calcAOIFixDistHistDist( fixStruct, aoiCenter, numBins, AOIsOfInterest, imRange )">calcAOIFixDistHistDist</a>	Calculate fixation density for different distances from relevant AOIs</li><li><a href="calcAOIFixDurationDist.html" class="code" title="function [ AOIDensity effectivNumFixation]  = calcAOIFixDurationDist( fixStruct, aoiCenter, maxDist )">calcAOIFixDurationDist</a>	calculate fixation density at the AOIs</li><li><a href="calcAOIFixSequenceDist.html" class="code" title="function [ AOISequence AOIDuration  ] =calcAOIFixSequenceDist( fixStruct, aoiCenter, maxDist, maxFixations )">calcAOIFixSequenceDist</a>	calculate matrix representing the sequence of AOIs fixated</li><li><a href="calcAOISacDensityDist.html" class="code" title="function [AOIDensity ] =calcAOISacDensityDist( sacStruct, aoiCenter, maxDist )">calcAOISacDensityDist</a>	calculate target saccade density</li><li><a href="calcAOISacSequenceDist.html" class="code" title="function [ AOISequence ] =calcAOISacSequenceDist( sacStruct, aoiCenter, maxDist, maxSaccades )">calcAOISacSequenceDist</a>	calculate matrix representing the sequence of AOIs saccaded to</li><li><a href="calcDistTraveled.html" class="code" title="function distTraveled =calcDistTraveled( eyePos )">calcDistTraveled</a>	calculate the total distance traveled by the eye</li><li><a href="calcLatencyRelAOIFixDist.html" class="code" title="function latency =calcLatencyRelAOIFixDist( fixStruct, aoiCenter, maxDist, AOIsOfInterest )">calcLatencyRelAOIFixDist</a>	get latency until relevant AOI fixated</li><li><a href="calcLatencyRelAOISacDist.html" class="code" title="function latency =calcLatencyRelAOISacDist( sacStruct, aoiCenter, maxDist, AOIsOfInterest )">calcLatencyRelAOISacDist</a>	get latency until relevant AOI is saccade target</li><li><a href="codeFixationsDist.html" class="code" title="function [ fixStruct ] = codeFixationsDist( eyeTrack, windowSize, viewThreshold )">codeFixationsDist</a>	identify fixations</li><li><a href="viewAOILandscape.html" class="code" title="function AOIimage = viewAOILandscape( aoiPos, outSideDist, A, showFigure )">viewAOILandscape</a>	A: image</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Notes: calculates 2-norm distance from target vector to all query vectors</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% syntax:  dist = calcEuclidDist( target, query)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%   target: (d by 1) vector of the target vector</span>
+0007 <span class="comment">%   query: (d by N) matrix of the query vectors (dimensionality is d, num</span>
+0008 <span class="comment">%       samples is N )</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Outputs:</span>
+0011 <span class="comment">%   dist: vector of all 2-Norm distances</span>
+0012 
+0013 <a name="_sub0" href="#_subfunctions" class="code">function dist = calc2Dist( target, query)</a>
+0014 
+0015 
+0016 dist = ( repmat(target,1,size(query,2)) - query);
+0017 dist = sqrt(sum(dist.^2,1));
+0018         
+0019</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of kalmanMissingData</title>
+  <meta name="keywords" content="kalmanMissingData">
+  <meta name="description" content="wrapper function for the kalman filter toolbox">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; kalmanMissingData.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>kalmanMissingData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>wrapper function for the kalman filter toolbox</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [xOut]=kalmanMissingData(x,t,k) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> wrapper function for the kalman filter toolbox
+ code by Fabian Benitez
+
+kalman filter with missing data
+input x=the observed data ( dimension by numberSamples), nan where missing
+ 
+      t=the time data indicated wether or not the data is missing
+ 
+ 
+      A=The system matrix
+      H=the observation matrix
+      Q=system covariance
+      R=observation covariance</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="filterEyeTrackInfant.html" class="code" title="function eyeTrack = filterEyeTrackInfant( eyeTrack, smoothParam )">filterEyeTrackInfant</a>	Kalman filter missing data from eye track</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% wrapper function for the kalman filter toolbox</span>
+0002 <span class="comment">% code by Fabian Benitez</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%kalman filter with missing data</span>
+0005 <span class="comment">%input x=the observed data ( dimension by numberSamples), nan where missing</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%      t=the time data indicated wether or not the data is missing</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%      A=The system matrix</span>
+0011 <span class="comment">%      H=the observation matrix</span>
+0012 <span class="comment">%      Q=system covariance</span>
+0013 <span class="comment">%      R=observation covariance</span>
+0014 
+0015 <a name="_sub0" href="#_subfunctions" class="code">function [xOut]=kalmanMissingData(x,t,k)</a>
+0016 
+0017 [numDim tr]=size(x);
+0018 A=[eye(numDim) eye(numDim);zeros(numDim) eye(numDim)];
+0019 H=[eye(numDim) zeros(numDim)];
+0020 Q=eye(numDim*2)*k;
+0021 
+0022 N=length(t);
+0023 idx=1;
+0024 idx2=1;
+0025 <span class="keyword">while</span> idx&lt;=N,    
+0026     k1=0;
+0027     <span class="keyword">while</span> idx&lt;=N &amp;&amp; t(idx)==1 ,
+0028         idx=idx+1;
+0029         k1=k1+1;
+0030     <span class="keyword">end</span>
+0031     <span class="keyword">if</span> k1&gt;=1,
+0032         obs(idx2)=k1;
+0033         idx2=idx2+1;
+0034     <span class="keyword">end</span>
+0035     k1=0;
+0036     <span class="keyword">while</span> idx&lt;=N &amp;&amp; t(idx)&lt;0,
+0037         idx=idx+1;
+0038         k1=k1+1;
+0039     <span class="keyword">end</span>
+0040     <span class="keyword">if</span> k1&gt;=1,
+0041         obs(idx2)=-k1;
+0042         idx2=idx2+1;
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 N2=length(obs);
+0047 <span class="keyword">if</span> obs(1)&gt;0,
+0048     R=cov(x(:,1:obs(1))')+.0000001*eye(numDim);    
+0049     [xfilt Vfilt]=kalman_filter(x(:,1:obs(1)),A,H,Q,R,[x(:,1);zeros(size(x(:,1)))],0);
+0050     xPsObs=x(:,1:obs(1));
+0051 <span class="comment">%     xobs=xfilt(1:numDim,:);</span>
+0052     <span class="keyword">for</span> k1=2:N2,
+0053         <span class="keyword">if</span> obs(k1)&lt;0,
+0054             <span class="keyword">for</span> k2=1:abs(obs(k1)),
+0055                 xTemp=A*xfilt(:,end);
+0056                 xfilt(:,end+1)=xTemp;
+0057                 xPsObs=[xPsObs xTemp(1:numDim)];
+0058             <span class="keyword">end</span>
+0059         <span class="keyword">else</span>
+0060             [tr numObs]=size(xPsObs);
+0061             xPsObs=[xPsObs x(:,numObs+1:numObs+obs(k1))];
+0062             R=cov(xPsObs')+.0000001*eye(numDim);
+0063             [xfilt Vfilt]=kalman_filter(xPsObs,A,H,Q,R,[xPsObs(:,1);zeros(size(x(:,1)))],0);            
+0064         <span class="keyword">end</span>        
+0065     <span class="keyword">end</span>
+0066 <span class="keyword">else</span>
+0067     x=fliplr(x);
+0068     obs=fliplr(obs);
+0069     R=cov(x(:,1:obs(1))')+.0000001*eye(numDim);    
+0070     [xfilt Vfilt]=kalman_filter(x(:,1:obs(1)),A,H,Q,R,[x(:,1);zeros(size(x(:,1)))],0);
+0071     xPsObs=x(:,1:obs(1));
+0072 <span class="comment">%     xobs=xfilt(1:numDim,:);</span>
+0073     <span class="keyword">for</span> k1=2:N2,
+0074         <span class="keyword">if</span> obs(k1)&lt;0,
+0075             <span class="keyword">for</span> k2=1:abs(obs(k1)),
+0076                 xTemp=A*xfilt(:,end);
+0077                 xfilt(:,end+1)=xTemp;
+0078                 xPsObs=[xPsObs xTemp(1:numDim)];
+0079             <span class="keyword">end</span>
+0080         <span class="keyword">else</span>
+0081             [tr numObs]=size(xPsObs);
+0082             xPsObs=[xPsObs x(:,numObs+1:numObs+obs(k1))];
+0083             R=cov(xPsObs')+.0000001*eye(numDim);
+0084             
+0085 <span class="comment">%             if sum(sum(isnan(R)))</span>
+0086 <span class="comment">%                 R</span>
+0087 <span class="comment">%             end</span>
+0088             
+0089             [xfilt Vfilt]=kalman_filter(xPsObs,A,H,Q,R,[xPsObs(:,1);zeros(size(x(:,1)))],0);            
+0090         <span class="keyword">end</span>        
+0091     <span class="keyword">end</span>
+0092     xPsObs=fliplr(xPsObs);
+0093 <span class="keyword">end</span>
+0094     
+0095 xfilt=kalman_smoother(xPsObs,A,H,Q,R,[x(:,1);zeros(size(x(:,1)))],0);
+0096 xOut=xfilt(1:numDim,:);
+0097</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

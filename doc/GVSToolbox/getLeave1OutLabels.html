@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getLeave1OutLabels</title>
+  <meta name="keywords" content="getLeave1OutLabels">
+  <meta name="description" content="get a struct for specifying folds of leave one out cross validation">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; getLeave1OutLabels.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>getLeave1OutLabels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>get a struct for specifying folds of leave one out cross validation</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> get a struct for specifying folds of leave one out cross validation
+ notes: return an array of the train/testing indices for leave 1 subject
+ out cross validation.  It wassumes samples from 1 subject are stored 
+ adjacent to each other
+ 
+ syntax: trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )
+
+ Input:
+   numSamples: total number of data samples
+   numPer1Subj: vector of number of consecutive samples for each subject.
+       If it is a constant amount of each subject, then you can just
+       specify that constant integer
+ 
+ Outputs:
+   trainTesTLabels: struct array of train/test indices,
+       trainTesTLabels(1).test, or trainTesTLabels(1).train</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="runLDALeave1Out.html" class="code" title="function  [ percCorrect w predictedVsTrue] = runLDALeave1Out( featureVect, classLabels,numSamplesPerSubj, expLabels )">runLDALeave1Out</a>	calculate leave 1 subject out accuracy for Bayes classifier with equal covariance</li><li><a href="runLRLeave1Out.html" class="code" title="function [ percCorrect w predictedVsTrue] = runLRLeave1Out( featureVect, classLabels, numSamplesPerSubj, lambdaScalar, expLabels )">runLRLeave1Out</a>	calculate leave 1 subject out accuracy for L1 penalized logistic regression</li><li><a href="runSVMLeave1Out.html" class="code" title="function [ percCorrect w predictedVsTrue ] = runSVMLeave1Out( featureVect, classLabels,numSamplesPerSubj, expLabels )">runSVMLeave1Out</a>	calculate leave 1 subject out accuracy for linear SVM</li><li><a href="sortVariablesNB.html" class="code" title="function [ bestVariables, bestToWorst, accuracy ] = sortVariablesNB( featureVect, classLabels,numSamplesPerSubj, topVarsToKeep )">sortVariablesNB</a>	Naive bayes ranking of variables (using CV accuracy criterion)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% get a struct for specifying folds of leave one out cross validation</span>
+0002 <span class="comment">% notes: return an array of the train/testing indices for leave 1 subject</span>
+0003 <span class="comment">% out cross validation.  It wassumes samples from 1 subject are stored</span>
+0004 <span class="comment">% adjacent to each other</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% syntax: trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Input:</span>
+0009 <span class="comment">%   numSamples: total number of data samples</span>
+0010 <span class="comment">%   numPer1Subj: vector of number of consecutive samples for each subject.</span>
+0011 <span class="comment">%       If it is a constant amount of each subject, then you can just</span>
+0012 <span class="comment">%       specify that constant integer</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%   trainTesTLabels: struct array of train/test indices,</span>
+0016 <span class="comment">%       trainTesTLabels(1).test, or trainTesTLabels(1).train</span>
+0017 
+0018 <a name="_sub0" href="#_subfunctions" class="code">function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )</a>
+0019 
+0020 <span class="keyword">if</span> length(numPer1Subj) == 1  <span class="comment">%if fixed number</span>
+0021     numTrials = numSamples/numPer1Subj;
+0022     <span class="keyword">for</span> i1 = 1:numTrials
+0023         i1_test = i1*numPer1Subj - [numPer1Subj-1:-1:0];    
+0024         trainTesTLabels(i1).test = i1_test;
+0025         trainTesTLabels(i1).train = 1:numSamples;
+0026         trainTesTLabels(i1).train(i1_test) = [];           
+0027     <span class="keyword">end</span>
+0028     
+0029 <span class="keyword">else</span>        <span class="comment">%different number in each block, the case for infants</span>
+0030     numTrials = length(numPer1Subj);    
+0031     trainTesTLabels(1).test =1:numPer1Subj(1);
+0032     trainTesTLabels(1).train =  (numPer1Subj(1)+1):numSamples;
+0033     <span class="keyword">for</span> i1 = 2:numTrials        
+0034         i1_test = (sum(numPer1Subj(1:i1-1))+1):sum(numPer1Subj(1:i1));
+0035         trainTesTLabels(i1).test =i1_test;
+0036         trainTesTLabels(i1).train = 1:numSamples;
+0037         trainTesTLabels(i1).train(i1_test) = [];           
+0038     <span class="keyword">end</span>
+0039     
+0040     
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

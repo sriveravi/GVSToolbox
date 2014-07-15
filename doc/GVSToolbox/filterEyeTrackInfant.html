@@ -1,0 +1,155 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of filterEyeTrackInfant</title>
+  <meta name="keywords" content="filterEyeTrackInfant">
+  <meta name="description" content="Kalman filter missing data from eye track">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; filterEyeTrackInfant.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>filterEyeTrackInfant
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Kalman filter missing data from eye track</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function eyeTrack = filterEyeTrackInfant( eyeTrack, smoothParam ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Kalman filter missing data from eye track
+ Samuel Rivera and Fabian Benitez for Kalman Filtering
+ June 24, 2011
+ Notes: This function filters eye tracks to smooth and eliminate missing
+       data
+
+ Syntax: eyeTrack = filterEyeTrackInfant( eyeTrack )
+
+ Inputs: 
+       eyeTrack: (Nx1) vector  of complex (x+i*y) coordinates.  -1-i1  to identify
+           missing data.  The paramters used here work well for data
+           scaled between [0 1]
+ 
+ Outputs:
+      eyeTrack: the kalman filtered version</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="kalmanMissingData.html" class="code" title="function [xOut]=kalmanMissingData(x,t,k)">kalmanMissingData</a>	wrapper function for the kalman filter toolbox</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="smoothTracks.html" class="code" title="function dataStruct = smoothTracks( dataStruct, smoothParam )">smoothTracks</a>	Syntax:  dataStruct = smoothTracks( dataStruct )</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Kalman filter missing data from eye track</span>
+0002 <span class="comment">% Samuel Rivera and Fabian Benitez for Kalman Filtering</span>
+0003 <span class="comment">% June 24, 2011</span>
+0004 <span class="comment">% Notes: This function filters eye tracks to smooth and eliminate missing</span>
+0005 <span class="comment">%       data</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Syntax: eyeTrack = filterEyeTrackInfant( eyeTrack )</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%       eyeTrack: (Nx1) vector  of complex (x+i*y) coordinates.  -1-i1  to identify</span>
+0011 <span class="comment">%           missing data.  The paramters used here work well for data</span>
+0012 <span class="comment">%           scaled between [0 1]</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Outputs:</span>
+0015 <span class="comment">%      eyeTrack: the kalman filtered version</span>
+0016 
+0017 <a name="_sub0" href="#_subfunctions" class="code">function eyeTrack = filterEyeTrackInfant( eyeTrack, smoothParam )</a>
+0018            
+0019 <span class="comment">% oriEyes = eyeTrack;</span>
+0020 
+0021 <span class="comment">%---------------------------------------</span>
+0022 <span class="comment">%filter using Kalman</span>
+0023 
+0024 eyeTrack = [real(eyeTrack) imag(eyeTrack) ];
+0025 eyeTrack( eyeTrack == -1) = nan;
+0026 
+0027 t = ones( 1, length( eyeTrack ) );
+0028 t( isnan( eyeTrack(:,1) )) = -1; <span class="comment">%mising is -1, filled is 1</span>
+0029 
+0030 <span class="keyword">if</span> nargin &lt; 2 || isempty( smoothParam)
+0031     smoothParam = .0003;  <span class="comment">%  to increase smoothness, lower the number</span>
+0032                       <span class="comment">% 1000 empirically works on the up-scaled eye track data</span>
+0033                       <span class="comment">% in [.0001 , .0005] empirically works on the data in [ 0 1 ]</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 known = find( t == 1); 
+0037 <span class="keyword">while</span>(known(2)-known(1) &gt;1) <span class="comment">%make sure not a single thing, so we can calculate things</span>
+0038     known(1) = [];
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% I need to identify the large gaps of missing eye tracks</span>
+0042 <span class="comment">% don't interpolate the large missing gaps</span>
+0043 missingWindow = 4;
+0044 interpThese = ones( 1, length( eyeTrack ) );
+0045 <span class="keyword">for</span> i1 =missingWindow:length(interpThese)    
+0046     i1_check = i1 - [missingWindow-1:-1:0];
+0047     <span class="keyword">if</span> sum( t(i1_check) == -1) == missingWindow
+0048         interpThese( i1_check ) = 0;
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>    
+0051 <span class="comment">% find start/end of the gaps to interpolate</span>
+0052 k1 = 1;
+0053 inABlock = 0;
+0054 <span class="keyword">for</span> i1 = 1:length(interpThese)    
+0055     <span class="keyword">if</span> (inABlock==0) &amp;&amp; (interpThese(i1) ==1)
+0056         startInterp(k1) = i1;
+0057         inABlock = 1;
+0058     <span class="keyword">end</span>
+0059     <span class="keyword">if</span> (inABlock==1) &amp;&amp; (interpThese(i1) ==0)
+0060         endInterp(k1) = i1-1;
+0061         inABlock = 0;
+0062         k1 = k1+1;
+0063     <span class="keyword">end</span>
+0064     <span class="comment">% make sure to end at last sample if started already</span>
+0065     <span class="keyword">if</span> (i1 ==length(interpThese)) &amp;&amp; (inABlock==1)
+0066         endInterp(k1) = i1;
+0067     <span class="keyword">end</span>    
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">% now interpolate just within those blocks of uninterrupted track</span>
+0071 <span class="keyword">for</span> i1 = 1:length( startInterp )
+0072     [eyeTrack1]=<a href="kalmanMissingData.html" class="code" title="function [xOut]=kalmanMissingData(x,t,k)">kalmanMissingData</a>( eyeTrack(startInterp(i1):endInterp(i1),:)', t(startInterp(i1):endInterp(i1)), smoothParam)';
+0073     eyeTrack(startInterp(i1):endInterp(i1),:) = eyeTrack1;
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="comment">%old way, without chopping eye track into uninterrupted blocks</span>
+0077 <span class="comment">% if ~isempty(known) &amp;&amp; known(1) &gt; 1</span>
+0078 <span class="comment">%     [eyeTrack1]=kalmanMissingData( eyeTrack(known(1):end,:)', t(known(1):end), smoothParam)';</span>
+0079 <span class="comment">%     eyeTrack = [ eyeTrack(1:known(1)-1,:); eyeTrack1 ];</span>
+0080 <span class="comment">% else</span>
+0081 <span class="comment">%     [eyeTrack]=kalmanMissingData( eyeTrack', t, smoothParam)';</span>
+0082 <span class="comment">% end</span>
+0083 
+0084 
+0085 eyeTrack(isnan(eyeTrack)) = -1;
+0086 eyeTrack = eyeTrack(:,1)+1i*eyeTrack(:,2);
+0087 
+0088 
+0089 <span class="comment">% visualizeTrackSingle(  eyeTrack, oriEyes, 'test' )</span>
+0090 
+0091 
+0092  
+0093 
+0094</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

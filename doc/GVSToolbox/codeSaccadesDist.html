@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of codeSaccadesDist</title>
+  <meta name="keywords" content="codeSaccadesDist">
+  <meta name="description" content="identify saccades">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; codeSaccadesDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>codeSaccadesDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>identify saccades</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [  sacStruct  ] = codeSaccadesDist( eyeTrack, velThreshold, stopThreshold) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> identify saccades
+ July 11, 2011
+ Notes: This function codes the saccades
+ 
+ syntax: [sacStruct ]  = codeSaccades( eyeTrack, velThreshold, stopThreshold )
+ 
+ Inputs: 
+       eyeTrack: vector  of complex (x+i*y) coordinates.  -1-i1  to identify
+           missing data. Data should be scaled according to the image dimensions.  
+           See function 'scaleEyeTrack'.
+       velThreshold: min Euclidean pixel distance to travel in one sample unit time to
+          be considered a saccade
+       stopThreshold: max distance to travel in one sample to be considered a stop 
+  
+ Outputs:
+       saccadeVector: vector having 0 where no fixations, then 1, 2 ,3,
+           and so on for the fixations in the sequence
+       startSacPos: in format [ x x x ... x; y y y ... y]
+       endSacPos: in format [ x x x ... x; y y y ... y]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="extractVarsDist.html" class="code" title="function [ featureVect,  varParams ] = extractVarsDist( trackCell, aoiPositions, maxDist, relevantAOIs, varParams )">extractVarsDist</a>	extract all variables from a cell of eye tracks</li><li><a href="visualizeTrackDist.html" class="code" title="function visualizeTrackDist(  leftEyePos, leftOri, imgFile, varParams, stimSize )">visualizeTrackDist</a>	visualize the gaze data</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThreshold, stopThreshold, startPos )</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% identify saccades</span>
+0002 <span class="comment">% July 11, 2011</span>
+0003 <span class="comment">% Notes: This function codes the saccades</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% syntax: [sacStruct ]  = codeSaccades( eyeTrack, velThreshold, stopThreshold )</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">%       eyeTrack: vector  of complex (x+i*y) coordinates.  -1-i1  to identify</span>
+0009 <span class="comment">%           missing data. Data should be scaled according to the image dimensions.</span>
+0010 <span class="comment">%           See function 'scaleEyeTrack'.</span>
+0011 <span class="comment">%       velThreshold: min Euclidean pixel distance to travel in one sample unit time to</span>
+0012 <span class="comment">%          be considered a saccade</span>
+0013 <span class="comment">%       stopThreshold: max distance to travel in one sample to be considered a stop</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Outputs:</span>
+0016 <span class="comment">%       saccadeVector: vector having 0 where no fixations, then 1, 2 ,3,</span>
+0017 <span class="comment">%           and so on for the fixations in the sequence</span>
+0018 <span class="comment">%       startSacPos: in format [ x x x ... x; y y y ... y]</span>
+0019 <span class="comment">%       endSacPos: in format [ x x x ... x; y y y ... y]</span>
+0020 <span class="comment">%</span>
+0021 
+0022 <a name="_sub0" href="#_subfunctions" class="code">function [  sacStruct  ] = codeSaccadesDist( eyeTrack, velThreshold, stopThreshold)</a>
+0023 
+0024     <span class="keyword">if</span> nargin &lt; 2 || isempty( velThreshold)
+0025         velThreshold = 20;
+0026     <span class="keyword">end</span>
+0027     <span class="keyword">if</span> nargin &lt; 3 || isempty( stopThreshold )
+0028         stopThreshold = 8;
+0029     <span class="keyword">end</span>
+0030 
+0031     numSamples =  length( eyeTrack);
+0032     saccadeVec = zeros(numSamples ,1);
+0033     startSacPos = zeros( 2, numSamples );
+0034     endSacPos = zeros( 2, numSamples );
+0035     startPos = 1; 
+0036     peakVelIdx = 1; <span class="comment">%make sure it starts, will become -1 if none</span>
+0037     k1 = 1;
+0038     <span class="comment">% find all saccades based on a velocity threshold</span>
+0039     <span class="keyword">while</span> (peakVelIdx &gt; 0) &amp;&amp; (startPos &lt; numSamples ) 
+0040             [ sacIdxStart sacIdxEnd peakVelIdx] = <a href="#_sub1" class="code" title="subfunction [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThreshold, stopThreshold, startPos )">findSaccade</a>(  eyeTrack, velThreshold, stopThreshold, startPos );
+0041             <span class="keyword">if</span> (peakVelIdx &gt; 0)
+0042                 startSacPos(:,k1) = [ real( eyeTrack(sacIdxStart)); imag( eyeTrack(sacIdxStart))  ];
+0043                 endSacPos(:,k1) = [ real( eyeTrack(sacIdxEnd)); imag( eyeTrack(sacIdxEnd))  ];                    
+0044                 saccadeVec(sacIdxStart:sacIdxEnd) = k1;
+0045                 startPos = sacIdxEnd+1;
+0046                 k1 = k1+1;
+0047             <span class="keyword">end</span>                       
+0048     <span class="keyword">end</span>
+0049     
+0050     startSacPos(:,k1:end) = []; <span class="comment">%clean up unused parts</span>
+0051     endSacPos(:,k1:end) = [];
+0052     
+0053     
+0054     sacStruct.saccadeVec = saccadeVec;
+0055     sacStruct.startSacPos = startSacPos;
+0056     sacStruct.endSacPos = endSacPos;
+0057       
+0058     
+0059 <span class="keyword">end</span>
+0060 
+0061 <span class="comment">%---------------------------------------------------</span>
+0062  <span class="comment">%--------------------------------------------------------</span>
+0063  
+0064 <a name="_sub1" href="#_subfunctions" class="code">function [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThreshold, stopThreshold, startPos )</a>
+0065 
+0066 <span class="comment">% % velThreshold = 20;</span>
+0067 <span class="comment">% % stopThreshold = 5;</span>
+0068 <span class="comment">% % eyeTrack = eyePos;</span>
+0069 <span class="comment">% % startPos = [];</span>
+0070 
+0071    
+0072     <span class="comment">%--------------- initialize -----------------------</span>
+0073     windowSize = 2;
+0074     minTracksToConsider = 2;
+0075     numSamples = length( eyeTrack);
+0076     dist = -1*ones( numSamples,1);
+0077     eyeTrack =  [ real( eyeTrack(:)) imag(eyeTrack(:)) ]'; <span class="comment">% in [ x x ... x; y y ... y ]</span>
+0078     maxPos = size( eyeTrack,2) - windowSize+1;
+0079 
+0080     peakVelIdx = -1;
+0081     sacIdxStart = startPos;
+0082     sacIdxEnd = -1;
+0083     
+0084     <span class="comment">% specify search start position</span>
+0085     <span class="keyword">if</span> nargin &lt; 4 || isempty( startPos )   
+0086         i1 = 0;
+0087     <span class="keyword">else</span>
+0088         i1 =  startPos-1;
+0089     <span class="keyword">end</span>
+0090 
+0091     <span class="comment">%--------------------------------------------------------</span>
+0092     <span class="comment">%-----------find saccade based on velocity threshold ----------</span>
+0093     saccadeFound = 0;
+0094     <span class="keyword">while</span> (i1 &lt; maxPos) 
+0095         <span class="comment">%increment, until start with not missing if necessary</span>
+0096          i1 =  i1+1;     
+0097         <span class="keyword">while</span> (i1 &lt; maxPos) &amp;&amp; (eyeTrack(1,i1)==-1) 
+0098             i1 =  i1+1; 
+0099         <span class="keyword">end</span>
+0100         <span class="comment">% select window of windowSize samples, expand if</span>
+0101         <span class="comment">% too much missing data or if last sample is missing</span>
+0102         i2 = 0; <span class="comment">%for expanding window</span>
+0103         
+0104         
+0105         window = eyeTrack(:, i1:(i1+windowSize-1));        
+0106         missIdx = find( window(1,:) == -1 );
+0107         window( :, missIdx ) = [];
+0108         <span class="comment">% old way</span>
+0109 <span class="comment">%         window( window==-1) = [];</span>
+0110                        
+0111         window = reshape( window, 2,[]);
+0112         
+0113         
+0114         <span class="keyword">while</span> ( (size( window,2) &lt; minTracksToConsider ) || <span class="keyword">...</span>
+0115                     (eyeTrack(1, i1+windowSize-1+i2)==-1)  ) <span class="keyword">...</span>
+0116                      &amp;&amp; (i1+i2)&lt;maxPos  <span class="comment">% do not expand too far</span>
+0117             i2 = i2+1;
+0118             window = eyeTrack(:, i1:(i1+windowSize-1+i2));
+0119             missIdx = find( window(1,:) == -1 );
+0120             window( :, missIdx ) = [];
+0121         <span class="comment">% old way</span>
+0122 <span class="comment">%             window( window==-1) = [];</span>
+0123         <span class="keyword">end</span>
+0124 
+0125         <span class="comment">% find start position, and end position of saccade based on a</span>
+0126         <span class="comment">% threshold velocity for starting slow, middle fast, end slow</span>
+0127         window = reshape( window, 2,[]);  
+0128         <span class="keyword">if</span> size( window,2) &gt;= minTracksToConsider <span class="comment">%handle missing data</span>
+0129             <span class="comment">% distance traveled per time unit</span>
+0130             dist(i1) = norm( [window(:,end) - window(:,1)], <span class="string">'fro'</span>)/(windowSize+i2-1); 
+0131             <span class="keyword">if</span> (dist(i1) &lt; stopThreshold) &amp;&amp; ( saccadeFound &lt; 1) <span class="comment">%start condition</span>
+0132                 sacIdxStart = i1;
+0133             <span class="keyword">end</span>
+0134             <span class="keyword">if</span> (dist(i1) &gt; velThreshold) &amp;&amp; (sacIdxStart &gt;0 ) <span class="comment">%threshold condition</span>
+0135                 saccadeFound = i1;
+0136             <span class="keyword">end</span>
+0137             <span class="keyword">if</span> (dist(i1) &lt; stopThreshold) &amp;&amp; ( saccadeFound &gt; 1) <span class="comment">%end condition</span>
+0138                 <span class="keyword">if</span> sacIdxEnd &lt; 0 <span class="comment">% set initial slowdown</span>
+0139                     sacIdxEnd = i1;                
+0140                 <span class="keyword">end</span>
+0141                 <span class="keyword">if</span> dist(i1) &gt; dist( sacIdxEnd )  <span class="comment">% find end point (when start speeding up again)</span>
+0142                     [ peakVel peakVelIdx   ] = max( dist(sacIdxStart:sacIdxEnd));
+0143                     peakVelIdx = peakVelIdx+ sacIdxStart-1;                    
+0144                     <span class="keyword">break</span>;
+0145                 <span class="keyword">else</span> <span class="comment">% gaze still slowing down</span>
+0146                     sacIdxEnd = i1;
+0147                 <span class="keyword">end</span>
+0148             <span class="keyword">end</span>            
+0149         <span class="keyword">end</span>            
+0150     <span class="keyword">end</span> <span class="comment">% end while</span>
+0151 
+0152     <span class="comment">% don't count saccade if no end point</span>
+0153     <span class="keyword">if</span> ( saccadeFound &gt; 1) &amp;&amp; sacIdxEnd ==-1        
+0154         peakVelIdx =-1;
+0155         sacIdxStart = -1;
+0156     <span class="keyword">end</span>
+0157 
+0158 <span class="keyword">end</span>
+0159</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

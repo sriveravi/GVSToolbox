@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of findRedundancies</title>
+  <meta name="keywords" content="findRedundancies">
+  <meta name="description" content="finds redundant variables for easy removal">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; findRedundancies.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>findRedundancies
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>finds redundant variables for easy removal</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function unqIdx = findRedundancies( featVect  ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> finds redundant variables for easy removal
+ Feb 25, 2012
+ Notes: this funciton checks for redundant variables and returns the index
+ of the redundant ones so they can be removed
+
+  inputs:
+     featVect:  (numDim x numSample)  matrix
+     
+  outputs:
+     unqIdx: unique indices</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="sortVariablesANOVA.html" class="code" title="function [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect,classLabels, topVarsToKeep )">sortVariablesANOVA</a>	anova ranking of variables</li><li><a href="sortVariablesLR.html" class="code" title="function [ bestVariables bestToWorst  ] = sortVariablesLR( featureVect, classLabels,topVarsToKeep, topVarsToSearch )">sortVariablesLR</a>	L1 penalized logistic regression ranking of variables</li><li><a href="sortVariablesNB.html" class="code" title="function [ bestVariables, bestToWorst, accuracy ] = sortVariablesNB( featureVect, classLabels,numSamplesPerSubj, topVarsToKeep )">sortVariablesNB</a>	Naive bayes ranking of variables (using CV accuracy criterion)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% finds redundant variables for easy removal</span>
+0002 <span class="comment">% Feb 25, 2012</span>
+0003 <span class="comment">% Notes: this funciton checks for redundant variables and returns the index</span>
+0004 <span class="comment">% of the redundant ones so they can be removed</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%  inputs:</span>
+0007 <span class="comment">%     featVect:  (numDim x numSample)  matrix</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%  outputs:</span>
+0010 <span class="comment">%     unqIdx: unique indices</span>
+0011 <span class="comment">%</span>
+0012 
+0013 <a name="_sub0" href="#_subfunctions" class="code">function unqIdx = findRedundancies( featVect  )</a>
+0014 
+0015 [b  unqIdx ] = unique( featVect, <span class="string">'first'</span>, <span class="string">'rows'</span>);
+0016 unqIdx = sort( unqIdx, <span class="string">'ascend'</span>);</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runLRLeave1Out</title>
+  <meta name="keywords" content="runLRLeave1Out">
+  <meta name="description" content="calculate leave 1 subject out accuracy for L1 penalized logistic regression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; runLRLeave1Out.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>runLRLeave1Out
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculate leave 1 subject out accuracy for L1 penalized logistic regression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ percCorrect w predictedVsTrue] = runLRLeave1Out( featureVect, classLabels, numSamplesPerSubj, lambdaScalar, expLabels ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculate leave 1 subject out accuracy for L1 penalized logistic regression
+ 
+ syntax: [ percCorrect w ] = runLRLeave1Out( featureVect, classLabels, numSamplesPerSubj, lambdaScalar, expLabels )
+ 
+ Inputs:
+   featureVect: (dim x numSamples) matrix of data
+   classLabels: class labels, valued [0,1,2] for visualization, leave empty to
+       not visualize. Originally, class 1 for learn, 0 for didn't learn,
+       2 for remove because unclear
+   numSamplesPerSubj: as name implies, for splitting up the data into
+      leave 1 subject out cross validation
+   lambdaScalar: optional input specifying regularization parameter for
+       the  L1 penalized Logistic Regression
+   expLabels: optional input usually returned by 'getLeave1OutLabels'
+      function which specifies how to partition the data for leave 1
+      subject out cross validation
+ 
+ Outputs:
+   percCorrect: percentage correctly classified by leave 1 subj out CV
+   w: w vector returned by all the well labeled data
+   predictedVsTrue: cell containing the [predeicted ; true] labels of the
+       data for each fold of the cross validation
+ 
+ Note, class 1 for learn, 0 for didn't learn, 2 for remove because unclear</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="getLeave1OutLabels.html" class="code" title="function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )">getLeave1OutLabels</a>	get a struct for specifying folds of leave one out cross validation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="exampleEasy.html" class="code" title="">exampleEasy</a>	Example for easy use</li><li><a href="simpleGUI.html" class="code" title="function varargout = simpleGUI(varargin)">simpleGUI</a>	SIMPLEGUI MATLAB code for simpleGUI.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 <span class="comment">% calculate leave 1 subject out accuracy for L1 penalized logistic regression</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% syntax: [ percCorrect w ] = runLRLeave1Out( featureVect, classLabels, numSamplesPerSubj, lambdaScalar, expLabels )</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   featureVect: (dim x numSamples) matrix of data</span>
+0008 <span class="comment">%   classLabels: class labels, valued [0,1,2] for visualization, leave empty to</span>
+0009 <span class="comment">%       not visualize. Originally, class 1 for learn, 0 for didn't learn,</span>
+0010 <span class="comment">%       2 for remove because unclear</span>
+0011 <span class="comment">%   numSamplesPerSubj: as name implies, for splitting up the data into</span>
+0012 <span class="comment">%      leave 1 subject out cross validation</span>
+0013 <span class="comment">%   lambdaScalar: optional input specifying regularization parameter for</span>
+0014 <span class="comment">%       the  L1 penalized Logistic Regression</span>
+0015 <span class="comment">%   expLabels: optional input usually returned by 'getLeave1OutLabels'</span>
+0016 <span class="comment">%      function which specifies how to partition the data for leave 1</span>
+0017 <span class="comment">%      subject out cross validation</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Outputs:</span>
+0020 <span class="comment">%   percCorrect: percentage correctly classified by leave 1 subj out CV</span>
+0021 <span class="comment">%   w: w vector returned by all the well labeled data</span>
+0022 <span class="comment">%   predictedVsTrue: cell containing the [predeicted ; true] labels of the</span>
+0023 <span class="comment">%       data for each fold of the cross validation</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% Note, class 1 for learn, 0 for didn't learn, 2 for remove because unclear</span>
+0026 
+0027 <a name="_sub0" href="#_subfunctions" class="code">function [ percCorrect w predictedVsTrue] = runLRLeave1Out( featureVect, classLabels, numSamplesPerSubj, lambdaScalar, expLabels )</a>
+0028 
+0029 <span class="keyword">if</span> nargin &lt; 4 || isempty( lambdaScalar)
+0030     lambdaScalar = 1;
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% leave one subject out cross validation</span>
+0034 [ dim numSamples] = size( featureVect);
+0035 
+0036 <span class="comment">% center and scale variables to unit variance</span>
+0037 featureVect = featureVect - repmat( mean(featureVect,2), [1,numSamples] );
+0038 featStdev = std( featureVect, 0, 2);
+0039 featureVect( featStdev ~= 0,:) = featureVect( featStdev ~= 0,:)./repmat(featStdev(featStdev ~= 0), [1,numSamples]);
+0040 <span class="comment">% featureVect = featureVect./repmat( std( featureVect, 0, 2)+.001, [1,numSamples]);</span>
+0041 
+0042 featureVect = [ones(numSamples,1) featureVect']'; <span class="comment">% Add Bias element to features (at top)</span>
+0043 classLabels( classLabels == 0) = -1; <span class="comment">% Convert y to {-1,1} representation</span>
+0044 
+0045 <span class="keyword">if</span> nargin &lt; 5 || isempty(expLabels)
+0046     expLabels = <a href="getLeave1OutLabels.html" class="code" title="function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )">getLeave1OutLabels</a>( numSamples, numSamplesPerSubj);
+0047 <span class="comment">%     expLabels = balanceClasses( expLabels, classLabels );  % even out number samples in each class</span>
+0048 <span class="keyword">end</span>
+0049 numTrials = length(expLabels);
+0050 
+0051 <span class="comment">% init weights and lambda</span>
+0052 w_init = zeros(dim+1,1);
+0053 lambda = lambdaScalar*ones(dim+1,1);  <span class="comment">%15 %[ 1./(std( featureVect, 0, 2)+.01)]; %</span>
+0054 lambda(1) = 0; <span class="comment">% Do not penalize bias variable</span>
+0055 options = struct(<span class="string">'verbose'</span>,0);
+0056 totalNumTest = 0;
+0057 numCorrect = 0;
+0058 
+0059 
+0060 predictedVsTrue = cell( numTrials,1 );
+0061 
+0062 <span class="keyword">for</span> i1 = 1:numTrials 
+0063     
+0064     trainLabels = classLabels(:,expLabels(i1).train);
+0065     trainFeatures = featureVect(:,expLabels(i1).train);
+0066     trainFeatures( :, trainLabels==2) = [];
+0067     trainLabels( :, trainLabels==2) = [];
+0068     
+0069     testLabels = classLabels(:,expLabels(i1).test);
+0070     testFeatures = featureVect(:,expLabels(i1).test);
+0071     testFeatures( :, testLabels==2) = [];
+0072     testLabels( :, testLabels==2) = [];
+0073 
+0074     <span class="keyword">if</span> ~isempty( testLabels) 
+0075         <span class="comment">% training L1-Regularized Logistic Regression</span>
+0076         <span class="comment">% define objective variables</span>
+0077         funObj = @(w)LogisticLoss(w,trainFeatures',trainLabels');
+0078         w = L1GeneralProjection(funObj,w_init,lambda, options );
+0079 
+0080         <span class="comment">% testing,</span>
+0081         predictedLabels = sign(testFeatures'*w);
+0082         tempNumCorrect = sum(testLabels' == predictedLabels);
+0083         numCorrect = numCorrect + tempNumCorrect;
+0084         numTest = length(testLabels);
+0085         totalNumTest = totalNumTest+numTest;
+0086         <span class="comment">%fprintf('Number of Features Selected by L1-regualrized Logistic Regression classifier: %d (out of %d)\n',nnz(wLogL1(2:end)),dim);</span>
+0087         <span class="comment">%fprintf('Classification error rate on training data for L1-regularied Logistic Regression: %.2f\n',sum(y ~= sign(featureVect*wLogL1))/length(y));</span>
+0088         fprintf( <span class="string">'Accuracy = %.2f, (%d/%d), %d Guessed 1; Train # class 1: %d, class 0: %d. \n'</span>, <span class="keyword">...</span>
+0089             tempNumCorrect/numTest, tempNumCorrect,numTest, length(find(predictedLabels==1)), <span class="keyword">...</span>
+0090             length(find(trainLabels==1)), length(find(trainLabels==-1)));
+0091         
+0092         predictedLabels( predictedLabels == -1) = 0;
+0093         testLabels( testLabels == -1) = 0;
+0094         predictedVsTrue{i1} = [ predictedLabels'; testLabels];
+0095                 
+0096     <span class="keyword">end</span>
+0097 <span class="keyword">end</span>
+0098 percCorrect = numCorrect/totalNumTest; <span class="comment">%length(classLabels~=2);</span>
+0099 
+0100 <span class="comment">% normal vector of optimal hyperplane (ALL DATA)</span>
+0101 featureVect( :, classLabels==2) = [];
+0102 classLabels( :, classLabels==2) = [];
+0103 
+0104 funObj = @(w)LogisticLoss(w,featureVect',classLabels');
+0105 w = L1GeneralProjection(funObj,w_init,lambda, options);
+0106 w(1) =[];
+0107 
+0108 
+0109 
+0110 
+0111 
+0112</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

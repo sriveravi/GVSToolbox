@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sortVariablesANOVA</title>
+  <meta name="keywords" content="sortVariablesANOVA">
+  <meta name="description" content="anova ranking of variables">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; sortVariablesANOVA.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>sortVariablesANOVA
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>anova ranking of variables</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect,classLabels, topVarsToKeep ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> anova ranking of variables
+ 
+ syntax: [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect, ...
+                         classLabels, topVarsToKeep )
+ 
+ Inputs:
+   featureVect: all the the data samples in (dim x numSamples)
+   classLabels: all class labels (0 for not learned, 1 for learned, 2 unsure.  
+      The ones labeled class 2 will not be used.
+   topVarsToKeep: index of number of best variables to return
+ 
+ Outputs:
+   bestVariables: indices of best variables to separate the classes
+   bestToWorst: index ordering all the variables for all CV folds
+   p: associated p values for those indices</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="findRedundancies.html" class="code" title="function unqIdx = findRedundancies( featVect  )">findRedundancies</a>	finds redundant variables for easy removal</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% anova ranking of variables</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% syntax: [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect, ...</span>
+0004 <span class="comment">%                         classLabels, topVarsToKeep )</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Inputs:</span>
+0007 <span class="comment">%   featureVect: all the the data samples in (dim x numSamples)</span>
+0008 <span class="comment">%   classLabels: all class labels (0 for not learned, 1 for learned, 2 unsure.</span>
+0009 <span class="comment">%      The ones labeled class 2 will not be used.</span>
+0010 <span class="comment">%   topVarsToKeep: index of number of best variables to return</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   bestVariables: indices of best variables to separate the classes</span>
+0014 <span class="comment">%   bestToWorst: index ordering all the variables for all CV folds</span>
+0015 <span class="comment">%   p: associated p values for those indices</span>
+0016 <span class="comment">%</span>
+0017 
+0018 
+0019 <a name="_sub0" href="#_subfunctions" class="code">function [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect, </a><span class="keyword">...</span>
+0020                         classLabels, topVarsToKeep )
+0021                   
+0022 
+0023 <span class="keyword">if</span> nargin &lt; 4 || isempty( topVarsToKeep)
+0024     topVarsToKeep = 10;
+0025 <span class="keyword">end</span>
+0026 <span class="comment">% if nargin &lt; 5 || isempty( topVarsToSearch )</span>
+0027 <span class="comment">%     topVarsToSearch = topVarsToKeep;</span>
+0028 <span class="comment">% end</span>
+0029 
+0030 <span class="comment">% leave one subject out cross validation</span>
+0031 [ dim numSamples] = size( featureVect);
+0032 <span class="comment">% expLabels = getLeave1OutLabels( numSamples, numSamplesPerSubj);</span>
+0033 <span class="comment">% numTrials = length(expLabels);</span>
+0034 p = zeros( dim,1);
+0035 h = zeros(dim,1);
+0036 
+0037 featureVect(:,classLabels ==2) = [];
+0038 classLabels( classLabels ==2) = []; 
+0039 
+0040 <span class="comment">% do the tests on each feature</span>
+0041 <span class="keyword">for</span> i2 = 1:dim
+0042     [h(i2,1) p(i2,1) ] = ttest2( featureVect( i2, classLabels==0)', <span class="keyword">...</span>
+0043                      featureVect( i2, classLabels==1)',<span class="keyword">...</span>
+0044                       .05, <span class="string">'both'</span>, <span class="string">'unequal'</span>);        
+0045 <span class="keyword">end</span>    
+0046 <span class="comment">% [h p]  = ttest2(x,y, .05, 'both', 'unequal') %2 tailed, unequal</span>
+0047 <span class="comment">% variances, 5% significance evel</span>
+0048 <span class="comment">% h = 1 means reject, so different means</span>
+0049 <span class="comment">% p  very small is probability you see that data, given null hypothesis.</span>
+0050 <span class="comment">% So a low value is good (different means)</span>
+0051 
+0052 <span class="comment">% sort variables in order best to worst</span>
+0053 [ p bestToWorst] = sort( p, 1, <span class="string">'ascend'</span>);
+0054 
+0055 <span class="comment">% remove redundancies</span>
+0056 unqIdx = <a href="findRedundancies.html" class="code" title="function unqIdx = findRedundancies( featVect  )">findRedundancies</a>( featureVect( bestToWorst,:) );
+0057 bestToWorst = bestToWorst(unqIdx);
+0058 
+0059 bestVariables = bestToWorst(1:topVarsToKeep);
+0060 
+0061</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

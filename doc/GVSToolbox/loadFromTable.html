@@ -1,0 +1,124 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadFromTable</title>
+  <meta name="keywords" content="loadFromTable">
+  <meta name="description" content="Syntax:  dataStruct = loadFromTable( tableFile )">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; loadFromTable.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>loadFromTable
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Syntax:  dataStruct = loadFromTable( tableFile )</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function dataStruct = loadFromTable( tableFile ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> 
+ Syntax:  dataStruct = loadFromTable( tableFile )
+ 
+ Inputs:
+   tableFile: tab delimited file with column labels
+       subject, trial, gazeX, gazeY, label
+       Labels should be 0 or 1.  
+             label of 2 denotes unknown (exclude trial from analysis)
+       Missing (x,y) coordinates denoted by -1
+       X,Y coordinates scaled in [0,1] range
+ 
+ Outputs:
+   dataStruct: structure containing the loaded data in a nice format
+       including trackCell,allLabels, and sampsPerSubj</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="exampleEasy.html" class="code" title="">exampleEasy</a>	Example for easy use</li><li><a href="simpleGUI.html" class="code" title="function varargout = simpleGUI(varargin)">simpleGUI</a>	SIMPLEGUI MATLAB code for simpleGUI.fig</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%</span>
+0002 <span class="comment">% Syntax:  dataStruct = loadFromTable( tableFile )</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Inputs:</span>
+0005 <span class="comment">%   tableFile: tab delimited file with column labels</span>
+0006 <span class="comment">%       subject, trial, gazeX, gazeY, label</span>
+0007 <span class="comment">%       Labels should be 0 or 1.</span>
+0008 <span class="comment">%             label of 2 denotes unknown (exclude trial from analysis)</span>
+0009 <span class="comment">%       Missing (x,y) coordinates denoted by -1</span>
+0010 <span class="comment">%       X,Y coordinates scaled in [0,1] range</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%   dataStruct: structure containing the loaded data in a nice format</span>
+0014 <span class="comment">%       including trackCell,allLabels, and sampsPerSubj</span>
+0015 
+0016 <a name="_sub0" href="#_subfunctions" class="code">function dataStruct = loadFromTable( tableFile )</a>
+0017 
+0018 <span class="comment">% tableFile = 'exampleTable.txt';</span>
+0019 
+0020 <span class="comment">% load</span>
+0021 s = tdfread( tableFile );
+0022 trackCell = cell(1, max(s.subject)*max(s.trial));
+0023 allLabels = zeros( 1, max(s.subject)*max(s.trial));
+0024 
+0025 
+0026 subs = unique(s.subject); <span class="comment">% list of subject numbers</span>
+0027 sampsPerSubj = zeros( length(subs),1); <span class="comment">% for recording number trials</span>
+0028 
+0029 <span class="comment">%loop through each subject</span>
+0030 fullIdx = 1;  <span class="comment">%for indexing data structure</span>
+0031 subjIdx = 1;
+0032 <span class="keyword">for</span> i1 = subs'
+0033    <span class="comment">% get data for this subject</span>
+0034    sIdx = find( s.subject == i1);      
+0035    trial = s.trial(sIdx);
+0036    x = s.gazeX( sIdx );
+0037    y = s.gazeY( sIdx);
+0038    lab = s.label( sIdx);
+0039       
+0040    <span class="comment">% split it up by trials</span>
+0041    trList = unique(trial);
+0042    sampsPerSubj(subjIdx)= length(trList); <span class="comment">% get number samples</span>
+0043    <span class="keyword">for</span> i2 = trList'
+0044        trIdx = find( trial == i2);  
+0045        <span class="comment">% get gaze(x,i*y) and label</span>
+0046        trackCell{fullIdx} = x( trIdx)+ 1i*y(trIdx);
+0047        allLabels( fullIdx) = lab(trIdx(1));
+0048               
+0049        <span class="comment">% increment overallindex</span>
+0050        fullIdx = fullIdx+1;       
+0051    <span class="keyword">end</span>   
+0052    <span class="comment">% increment subject index</span>
+0053    subjIdx = subjIdx+1;   
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% get data struct for output</span>
+0057 trackCell(fullIdx:end) = [];
+0058 allLabels(fullIdx:end) = [];
+0059 dataStruct.trackCell = trackCell;
+0060 dataStruct.allLabels = allLabels;
+0061 dataStruct.sampsPerSubj = sampsPerSubj;
+0062 
+0063 
+0064</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

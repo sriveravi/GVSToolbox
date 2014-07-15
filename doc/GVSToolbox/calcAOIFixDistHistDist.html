@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcAOIFixDistHistDist</title>
+  <meta name="keywords" content="calcAOIFixDistHistDist">
+  <meta name="description" content="Calculate fixation density for different distances from relevant AOIs">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">GVSToolbox</a> &gt; calcAOIFixDistHistDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for GVSToolbox&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>calcAOIFixDistHistDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>Calculate fixation density for different distances from relevant AOIs</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function histMatrix =calcAOIFixDistHistDist( fixStruct, aoiCenter, numBins, AOIsOfInterest, imRange ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calculate fixation density for different distances from relevant AOIs
+ 
+ Syntax: histMatrix =calcAOIFixDistHist( eyePos, aoiCenter, numBins, AOIsOfInterest ) 
+ 
+ Inputs:
+  eyePos: vector  of complex (x+i*y) coordinates.  -1-i1  to identify
+         missing data.  They are in range [ 0 ,1 ]
+  aoiCenter: coordinates of AOI in image scale, returned by 'returnAOICenters.m'
+  numBins: number of bins to split up distance histogram
+  AOIsOfInterest: index of AOIs which we are interested in
+ 
+ Outputs:
+  histMatrix: histogram of distances to all the AOIs, each column
+       contains all fixation distance from to corresponding column of  aoiCenter. 
+       The elements in column are repeated accordint time fixation time</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>	Notes: calculates 2-norm distance from target vector to all query vectors</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Calculate fixation density for different distances from relevant AOIs</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Syntax: histMatrix =calcAOIFixDistHist( eyePos, aoiCenter, numBins, AOIsOfInterest )</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%  eyePos: vector  of complex (x+i*y) coordinates.  -1-i1  to identify</span>
+0007 <span class="comment">%         missing data.  They are in range [ 0 ,1 ]</span>
+0008 <span class="comment">%  aoiCenter: coordinates of AOI in image scale, returned by 'returnAOICenters.m'</span>
+0009 <span class="comment">%  numBins: number of bins to split up distance histogram</span>
+0010 <span class="comment">%  AOIsOfInterest: index of AOIs which we are interested in</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Outputs:</span>
+0013 <span class="comment">%  histMatrix: histogram of distances to all the AOIs, each column</span>
+0014 <span class="comment">%       contains all fixation distance from to corresponding column of  aoiCenter.</span>
+0015 <span class="comment">%       The elements in column are repeated accordint time fixation time</span>
+0016 <span class="comment">%</span>
+0017 
+0018 <a name="_sub0" href="#_subfunctions" class="code">function histMatrix =calcAOIFixDistHistDist( fixStruct, aoiCenter, numBins, AOIsOfInterest, imRange ) </a>
+0019 
+0020 fixPosVector = fixStruct.fixPosVector;
+0021 fixDurVector = fixStruct.fixDurVector;
+0022 
+0023 <span class="keyword">if</span> nargin &lt; 5 || isempty(imRange)
+0024     imRange = [1024; 1280];
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="comment">% % % initialize some paramters</span>
+0028 <span class="comment">% % fixationWinSize = 6;</span>
+0029 <span class="comment">% % fixationThreshold = 15;</span>
+0030 <span class="comment">% %</span>
+0031 <span class="comment">% % % scale eye tracks(using default value ), calculate fixations</span>
+0032 <span class="comment">% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] );</span>
+0033 <span class="comment">% % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );</span>
+0034 
+0035 
+0036 <span class="comment">% initialize some things</span>
+0037 numAOI = size(aoiCenter,2);
+0038 numFixation = size( fixPosVector,2);
+0039 distCell = cell( numFixation,1);
+0040 <span class="keyword">if</span> nargin &lt; 4 || isempty(AOIsOfInterest)
+0041     AOIsOfInterest = 1:numAOI;
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">if</span> nargin &lt; 3 || isempty(numBins)
+0044     numBins = 10;
+0045 <span class="keyword">end</span>
+0046 histMatrix = zeros( numBins, length(AOIsOfInterest));
+0047 xHist=linspace(0, imRange(2), numBins);
+0048 
+0049 <span class="comment">%calculate histogram of fixation distances</span>
+0050 k1 = 1;
+0051 <span class="keyword">for</span> i1 = AOIsOfInterest(:)'
+0052     distTemp = <a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>( aoiCenter(:,i1), fixPosVector); <span class="comment">% 2-norm</span>
+0053     <span class="keyword">for</span> i2 = 1:numFixation;
+0054         distCell{i2} = repmat(distTemp(i2), [fixDurVector(i2) ,1]);
+0055     <span class="keyword">end</span>
+0056     distValuesTemp = cell2mat(distCell); 
+0057     n = hist(  distValuesTemp, xHist);
+0058     <span class="keyword">if</span> sum(n)&gt;0
+0059         histMatrix(:,k1)= n./sum(n);
+0060     <span class="keyword">end</span>
+0061     k1 = k1+1;
+0062     
+0063 <span class="comment">%     % show it</span>
+0064 <span class="comment">%     bar( xHist,histMatrix(:,k1));</span>
+0065 <span class="comment">%     pause(.5);</span>
+0066     
+0067 <span class="keyword">end</span>
+0068     
+0069</pre></div>
+<hr><address>Generated on Tue 01-Jul-2014 12:35:04 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
