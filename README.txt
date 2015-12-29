@@ -10,9 +10,6 @@ Automatic selection of eye tracking variables in visual categorization for adult
 In N. Miyake, D. Peebles, & R. P. Cooper (Eds.), Proceedings of the 34th Annual Conference 
 of the Cognitive Science Society (pp. 2240-2245). 
 
-Use of this software is granted for basic research at non-for profit institutions only. 
-Commercial use of this software is not permitted. Corporations or for-profit institutions 
-interested in the use of this software should contact Prof. Aleix M. Martinez.
 
 The toolbox makes use of several software packages which implement L1 regularized optimization ( Mark Schmidt),
  support vector machine (LibSVM), and kalman filtering (Kevin Murphy).  They are included for convenienve, but
