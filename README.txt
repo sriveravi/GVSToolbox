@@ -22,7 +22,7 @@ http://www.cs.ubc.ca/~murphyk/Software/Kalman/kalman.html
   
  
 %%%%%%%%%%%  INSTALLATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-To install:
+To install, first download from GitHub (download zip)
 
 
 If you are comfortable with MATLAB's command line, navigate to the "GVSToolbox" folder.  Then run:
