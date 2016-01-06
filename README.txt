@@ -32,13 +32,10 @@ If you are comfortable with MATLAB's command line, navigate to the "GVSToolbox" 
 
 
 If you prefer the MATLABs GUI, 
-	 1.  open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at 
-	     command prompt and pressing enter.  
-	 2. In the dialog that pops up, click "Add with subfolder..."
-   	 3. Select the "ExtraToolboxes" directory inside "GVSToolbox" folder, then click open.
-    	 4. Click "Add folder", and navigate to "GVSToolbox" folder. Click open.
-   	 5. Click "Add folder", and navigate to "src" inside "GVSToolbox" folder. Click open.  
-    	 6. Click save.
+	 	 1.  open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at command prompt and pressing enter.  
+	    2. In the dialog that pops up, click "Add with subfolder..."
+   	 3. Select the "GVSToolbox" directory, then click open.
+    	 4. Click save.
 
     Libraries tested on linux and windows 64 bit.  libsvm may require 
     additional steps to compile for your system.  Instructions inside (ExtraToolboxes).

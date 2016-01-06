@@ -33,8 +33,8 @@ describeVariables( varParams, bestVariablesLR );
 
 % validate using classifier
 [ percCorrectLDA, wLDA ] = runLDALeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
-[ percCorrectLR, wLR ] = runLRLeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
-[ percCorrectSVM, wSVM  ] = runSVMLeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
+% [ percCorrectLR, wLR ] = runLRLeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
+% [ percCorrectSVM, wSVM  ] = runSVMLeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
 
 
 % output for analysis
