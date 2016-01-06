@@ -25,26 +25,34 @@ http://www.cs.ubc.ca/~murphyk/Software/Kalman/kalman.html
 To install:
 
 
-If you are comfortable with MATLAB's command line and using functions, navigate to the folder containing GVSToolbox folder.  Then run:
-    >>  addpath(genpath(fullfile(pwd, 'GVSToolbox')));
+If you are comfortable with MATLAB's command line, navigate to the "GVSToolbox" folder.  Then run:
+    >>  addpath(genpath(pwd));
+
+    Test by running: exampleEasy
+
 
 If you prefer the MATLABs GUI, 
-	 1.  open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at command prompt and pressing enter.  
+	 1.  open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at 
+	     command prompt and pressing enter.  
 	 2. In the dialog that pops up, click "Add with subfolder..."
-    3. Select the "ExtraToolboxes" directory inside GVSToolbox folder, then click open.
-    4. Click "Add folder", and navigate to "GVSToolbox" folder. Click open.
-    5. Click "Add folder", and navigate to "src" inside "GVSToolbox" folder. Click open.  
-    6. Click save.
+   	 3. Select the "ExtraToolboxes" directory inside "GVSToolbox" folder, then click open.
+    	 4. Click "Add folder", and navigate to "GVSToolbox" folder. Click open.
+   	 5. Click "Add folder", and navigate to "src" inside "GVSToolbox" folder. Click open.  
+    	 6. Click save.
 
     Libraries tested on linux and windows 64 bit.  libsvm may require 
     additional steps to compile for your system.  Instructions inside (ExtraToolboxes).
         
 
+%%%%%%%%%%%%%  TESTING %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Test by running: exampleEasy
 
-See 'doc/index.html' for a interative HTML tutorial (thanks to m2html package).
-See Supplement.pdf for explanation of machine learning methods and parameters
+Graphical user interface: Run simpleGUI.  
+    Load the "exampleTable.txt" file contained in the "GVSToolbox" folder
+ 
 
+%%%%%%%%%%%%%  EXAMPLES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 See exampleTable.txt for an example data source file.  Gaze assumed scaled in [0,1]
 
 Run exampleEasy.m for examples of how to:
@@ -53,4 +61,10 @@ Run exampleEasy.m for examples of how to:
     3. Validate the variables
 
 Run simpleGUI  for graphical user interface
+
+
+%%%%%%%%%%%%%%  DOCUMENTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+See 'doc/index.html' for a interactive HTML tutorial (thanks to m2html package).
+See Supplement.pdf for explanation of machine learning methods and parameters
 
