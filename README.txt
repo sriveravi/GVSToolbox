@@ -32,7 +32,7 @@ See 'doc/index.html' for a interative HTML tutorial (thanks to m2html package).
 
 See exampleTable.txt for an example data source file.  Gaze assumed scaled in [0,1]
 
-See exampleEasy.m for examples of how to:
+Run exampleEasy.m for examples of how to:
     1. Load eye data, visualize, and extract variables    
     2. Identify relevant variables (and reading them out in English)
     3. Validate the variables
