@@ -31,7 +31,7 @@ If you are comfortable with MATLAB's command line, navigate to the "GVSToolbox" 
     Test by running: exampleEasy
 
 
-If you prefer the MATLABs GUI, 
+If you prefer the MATLAB graphical user interface (point and click), 
 	 	 1.  open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at command prompt and pressing enter.  
 	    2. In the dialog that pops up, click "Add with subfolder..."
    	 3. Select the "GVSToolbox" directory, then click open.
