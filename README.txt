@@ -62,6 +62,6 @@ Run simpleGUI  for graphical user interface
 
 %%%%%%%%%%%%%%  DOCUMENTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-See 'doc/index.html' for a interactive HTML tutorial (thanks to m2html package).
+See 'doc/GVSHome.html' for a interactive HTML tutorial (thanks to m2html package).
 See Supplement.pdf for explanation of machine learning methods and parameters
 
