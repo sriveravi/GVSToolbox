@@ -63,5 +63,7 @@ Run simpleGUI  for graphical user interface
 %%%%%%%%%%%%%%  DOCUMENTATION %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 See 'doc/GVSHome.html' for a interactive HTML tutorial (thanks to m2html package).
+Online version is at:  sriveravi.github.io/GVSToolbox
+   
 See Supplement.pdf for explanation of machine learning methods and parameters
 
