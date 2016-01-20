@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runSVMLeave1Out</title>
+  <meta name="keywords" content="runSVMLeave1Out">
+  <meta name="description" content="calculate leave 1 subject out accuracy for linear SVM">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../GVSHome.html">Home</a> &gt;  <a href="GVSHome.html">src</a> &gt; runSVMLeave1Out.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../GVSHome.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="GVSHome.html">Index for src&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>runSVMLeave1Out
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>calculate leave 1 subject out accuracy for linear SVM</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ percCorrect w predictedVsTrue ] = runSVMLeave1Out( featureVect, classLabels,numSamplesPerSubj, expLabels ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> calculate leave 1 subject out accuracy for linear SVM
+ 
+ syntax: [ percCorrect w ] = runSVMLeave1Out( featureVect, classLabels, numSamplesPerSubj, expLabels)
+ 
+ Inputs:
+   featureVect: (dim x numSamples) matrix of data
+   classLabels: class labels, valued [0,1,2] for visualization, leave empty to
+       not visualize. Originally, class 1 for learn, 0 for didn't learn,
+       2 for remove because unclear
+   numSamplesPerSubj: as name implies, for splitting up the data into
+      leave 1 subject out cross validation
+   expLabels: optional input usually returned by 'getLeave1OutLabels'
+      function which specifies how to partition the data for leave 1
+      subject out cross validation
+ 
+ Outputs:
+   percCorrect: percentage correctly classified by leave 1 subj out CV
+   w: w vector returned by all the well labeled data
+   predictedVsTrue: cell containing the [predeicted ; true] labels of the
+       data for each fold of the cross validation
+ 
+ Note, class 1 for learn, 0 for didn't learn, 2 for remove because unclear</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="getLeave1OutLabels.html" class="code" title="function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )">getLeave1OutLabels</a>	get a struct for specifying folds of leave one out cross validation</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% calculate leave 1 subject out accuracy for linear SVM</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% syntax: [ percCorrect w ] = runSVMLeave1Out( featureVect, classLabels, numSamplesPerSubj, expLabels)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">%   featureVect: (dim x numSamples) matrix of data</span>
+0007 <span class="comment">%   classLabels: class labels, valued [0,1,2] for visualization, leave empty to</span>
+0008 <span class="comment">%       not visualize. Originally, class 1 for learn, 0 for didn't learn,</span>
+0009 <span class="comment">%       2 for remove because unclear</span>
+0010 <span class="comment">%   numSamplesPerSubj: as name implies, for splitting up the data into</span>
+0011 <span class="comment">%      leave 1 subject out cross validation</span>
+0012 <span class="comment">%   expLabels: optional input usually returned by 'getLeave1OutLabels'</span>
+0013 <span class="comment">%      function which specifies how to partition the data for leave 1</span>
+0014 <span class="comment">%      subject out cross validation</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Outputs:</span>
+0017 <span class="comment">%   percCorrect: percentage correctly classified by leave 1 subj out CV</span>
+0018 <span class="comment">%   w: w vector returned by all the well labeled data</span>
+0019 <span class="comment">%   predictedVsTrue: cell containing the [predeicted ; true] labels of the</span>
+0020 <span class="comment">%       data for each fold of the cross validation</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% Note, class 1 for learn, 0 for didn't learn, 2 for remove because unclear</span>
+0023 
+0024 <a name="_sub0" href="#_subfunctions" class="code">function [ percCorrect w predictedVsTrue ] = runSVMLeave1Out( featureVect, classLabels, </a><span class="keyword">...</span>
+0025                                 numSamplesPerSubj, expLabels )
+0026 
+0027 <span class="comment">% leave one subject out cross validation</span>
+0028 [ dim numSamples] = size( featureVect);
+0029 
+0030 <span class="comment">% center and scale variables to unit variance</span>
+0031 featureVect = featureVect - repmat( mean(featureVect,2), [1,numSamples] );
+0032 featStdev = std( featureVect, 0, 2);
+0033 featureVect( featStdev ~= 0,:) = featureVect( featStdev ~= 0,:)./repmat(featStdev(featStdev ~= 0), [1,numSamples]);
+0034 
+0035 <span class="keyword">if</span> nargin &lt; 4 || isempty(expLabels)
+0036     expLabels = <a href="getLeave1OutLabels.html" class="code" title="function trainTesTLabels = getLeave1OutLabels( numSamples, numPer1Subj )">getLeave1OutLabels</a>( numSamples, numSamplesPerSubj);
+0037 <span class="keyword">end</span>
+0038 
+0039 numTrials = length(expLabels);
+0040 numCorrect = 0;
+0041 totalNumTest=0;
+0042 options = [<span class="string">'-t 0 -h 0 -e .01'</span> ];  <span class="comment">%-t 0 for linear kernel, h 0 for shrinkage huristic</span>
+0043 
+0044 predictedVsTrue = cell( numTrials,1 );
+0045 
+0046 <span class="keyword">for</span> i1 = 1:numTrials 
+0047     
+0048     trainLabels = classLabels(:,expLabels(i1).train);
+0049     trainFeatures = featureVect(:,expLabels(i1).train);
+0050     trainFeatures( :, trainLabels==2) = [];
+0051     trainLabels( :, trainLabels==2) = [];
+0052     
+0053     testLabels = classLabels(:,expLabels(i1).test);
+0054     testFeatures = featureVect(:,expLabels(i1).test);
+0055     testFeatures( :, testLabels==2) = [];
+0056     testLabels( :, testLabels==2) = [];
+0057     
+0058     <span class="keyword">if</span> ~isempty( testLabels) 
+0059         model = svmtrain(trainLabels', trainFeatures', options );
+0060         [predicted, accuracy, probEst] = svmpredict(testLabels',testFeatures', model);
+0061         numCorrect = numCorrect + accuracy(1)*.01*length(testLabels);            
+0062         totalNumTest = totalNumTest+length(testLabels);  
+0063         
+0064         predictedVsTrue{i1} = [ predicted'; testLabels];
+0065         
+0066     <span class="keyword">end</span>
+0067 
+0068 <span class="keyword">end</span>
+0069 percCorrect = numCorrect/totalNumTest; <span class="comment">%length(classLabels~=2);</span>
+0070 
+0071 <span class="comment">% normal vector of optimal hyperplane (ALL DATA)</span>
+0072 featureVect( :, classLabels==2) = [];
+0073 classLabels( :, classLabels==2) = [];
+0074 model = svmtrain(classLabels', featureVect', options );
+0075 w = sum( repmat( model.sv_coef', [dim,1]).*full(model.SVs'),2);
+0076</pre></div>
+<hr><address>Generated on Wed 20-Jan-2016 11:34:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of codeFixationsDist</title>
+  <meta name="keywords" content="codeFixationsDist">
+  <meta name="description" content="June 22, 2011">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../GVSHome.html">Home</a> &gt;  <a href="GVSHome.html">src</a> &gt; codeFixationsDist.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../GVSHome.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="GVSHome.html">Index for src&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>codeFixationsDist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>June 22, 2011</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [ fixStruct ] = codeFixationsDist( eyeTrack, windowSize, viewThreshold ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> June 22, 2011
+ Notes: This function codes the eye track sequence according to the fixations
+   It checks to make sure that the fixation is not immediately at start of
+   sequence (from fixation slide) and eliminates this fixation if necessary
+   We identify fixations using the IDT algorithm
+ 
+ syntax: [ fixStruct ]  = codeFixations( eyeTrack, windowSize, viewThreshold )
+ 
+ Inputs: 
+       eyeTrack: vector  of complex (x+i*y) coordinates.  -1-i1  to identify
+           missing data. Data should be scaled according to the image dimensions.  
+           See function 'scaleEyeTrack'.
+       windowSize: integer of consecutive frames which should be within a
+           threshold of distance from one another (to be considered a
+           fixation) , ( 6 is good value for 60 Hz)
+       viewThreshold: euclidean distance within which eye positions are
+           considered part of same fixation, 15 is a good number for 30 px
+           diameter
+  
+ Outputs:
+       fixStruct, having 
+       fixStruct.fixDurVector: vector of (fx1),  for duration of fications
+       fixStruct.fixPosVector: in format [ x x x ... x; 
+                                                          y y y ... y]
+       fixStruct.fixationVector: (N by1) vector having 0 where no fixations, then 1, 2 ,3,
+           and so on for the fixations in the sequence</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>	Notes: calculates 2-norm distance from target vector to all query vectors</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="extractVarsDist.html" class="code" title="function [ featureVect,  varParams ] = extractVarsDist( trackCell, aoiPositions, maxDist, relevantAOIs, varParams )">extractVarsDist</a>	extract all variables from a cell of eye tracks</li><li><a href="visualizeTrackDist.html" class="code" title="function visualizeTrackDist(  leftEyePos, leftOri, imgFile, varParams, stimSize )">visualizeTrackDist</a>	visualize the gaze data</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSize, viewThreshold, startPos )</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% June 22, 2011</span>
+0002 <span class="comment">% Notes: This function codes the eye track sequence according to the fixations</span>
+0003 <span class="comment">%   It checks to make sure that the fixation is not immediately at start of</span>
+0004 <span class="comment">%   sequence (from fixation slide) and eliminates this fixation if necessary</span>
+0005 <span class="comment">%   We identify fixations using the IDT algorithm</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% syntax: [ fixStruct ]  = codeFixations( eyeTrack, windowSize, viewThreshold )</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Inputs:</span>
+0010 <span class="comment">%       eyeTrack: vector  of complex (x+i*y) coordinates.  -1-i1  to identify</span>
+0011 <span class="comment">%           missing data. Data should be scaled according to the image dimensions.</span>
+0012 <span class="comment">%           See function 'scaleEyeTrack'.</span>
+0013 <span class="comment">%       windowSize: integer of consecutive frames which should be within a</span>
+0014 <span class="comment">%           threshold of distance from one another (to be considered a</span>
+0015 <span class="comment">%           fixation) , ( 6 is good value for 60 Hz)</span>
+0016 <span class="comment">%       viewThreshold: euclidean distance within which eye positions are</span>
+0017 <span class="comment">%           considered part of same fixation, 15 is a good number for 30 px</span>
+0018 <span class="comment">%           diameter</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Outputs:</span>
+0021 <span class="comment">%       fixStruct, having</span>
+0022 <span class="comment">%       fixStruct.fixDurVector: vector of (fx1),  for duration of fications</span>
+0023 <span class="comment">%       fixStruct.fixPosVector: in format [ x x x ... x;</span>
+0024 <span class="comment">%                                                          y y y ... y]</span>
+0025 <span class="comment">%       fixStruct.fixationVector: (N by1) vector having 0 where no fixations, then 1, 2 ,3,</span>
+0026 <span class="comment">%           and so on for the fixations in the sequence</span>
+0027 
+0028 
+0029 <a name="_sub0" href="#_subfunctions" class="code">function [ fixStruct ] = codeFixationsDist( eyeTrack, windowSize, viewThreshold )</a>
+0030 
+0031     <span class="keyword">if</span> nargin &lt; 2
+0032         windowSize = 6;
+0033     <span class="keyword">end</span>
+0034     <span class="keyword">if</span> nargin &lt; 3
+0035         viewThreshold = 15;
+0036     <span class="keyword">end</span>
+0037 
+0038     numSamples =  length( eyeTrack);
+0039     fixationVector = zeros(numSamples ,1);  
+0040     fixDurVector = zeros(numSamples ,1);  
+0041     fixPosVector = zeros( 2, numSamples );
+0042     startPos = 1; 
+0043 
+0044     fixIndex = 1;  fixLength = 0; k1 = 1;
+0045     <span class="keyword">while</span>  ( fixIndex~=-1 ) &amp;&amp; (startPos &lt; numSamples ) 
+0046         <span class="comment">%     [k1 fixIndex fixLength]</span>
+0047         [fixIndex fixPosition fixLength] = <a href="#_sub1" class="code" title="subfunction [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSize, viewThreshold, startPos )">findFixation</a>(  eyeTrack, windowSize, viewThreshold, startPos );
+0048         startPos = fixIndex + fixLength;
+0049         <span class="keyword">if</span>  fixIndex~=-1 
+0050             fixationVector( fixIndex:(fixIndex+fixLength-1)) = k1;
+0051             fixPosVector(:,k1 ) = fixPosition(:);
+0052             fixDurVector(k1,1) = fixLength;
+0053             k1 = k1+1;
+0054         <span class="keyword">end</span>
+0055         
+0056     <span class="keyword">end</span>
+0057     fixPosVector(:,k1:end) = []; <span class="comment">%clean up unused parts</span>
+0058     fixDurVector( k1+1:end) = [];
+0059     
+0060     
+0061     <span class="comment">% eliminate first fixation if it coincides with the</span>
+0062     <span class="comment">% fixation slide ( start of sequence)</span>
+0063     <span class="keyword">if</span> fixationVector(1) == 1
+0064         fixationVector( fixationVector==1) = 0;
+0065         fixationVector( fixationVector ~= 0 ) = fixationVector( fixationVector ~= 0 )-1;
+0066         fixPosVector( :,1) = [];
+0067         fixDurVector(1) = [];
+0068     <span class="keyword">end</span>
+0069 
+0070     fixStruct.fixPosVector = fixPosVector;
+0071     fixStruct.fixDurVector = fixDurVector;
+0072     fixStruct.fixationVector = fixationVector;
+0073     
+0074 <span class="keyword">end</span>
+0075 <span class="comment">%---------------------------------------------------</span>
+0076 
+0077 <span class="comment">% Outputs:</span>
+0078 <span class="comment">%      fixIndex: integer index for beginning of fixation. -1 if none found</span>
+0079 <span class="comment">%      fixPosition: vector of the fixation position (mean of the window) -1 if none found</span>
+0080 <span class="comment">%      fixLength: : integer specifying total length of fixation, -1 if none found</span>
+0081 
+0082 <a name="_sub1" href="#_subfunctions" class="code">function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSize, viewThreshold, startPos )</a>
+0083 
+0084     <span class="comment">%--------------------------------------------------------</span>
+0085     <span class="comment">%--------------- initialize -----------------------</span>
+0086 
+0087     minTracksToConsider = floor( 2/3 * windowSize ); <span class="comment">% integer, specifying minimum samples</span>
+0088                         <span class="comment">%   tracked when calculating fixation</span>
+0089     eyeTrack =  [ real( eyeTrack(:)) imag(eyeTrack(:)) ]'; <span class="comment">% in [ x x ... x; y y ... y ]</span>
+0090     maxPos = size( eyeTrack,2) - windowSize+1;
+0091     fixPosition = -1; fixLength = -1;
+0092     fixIndex = -1; <span class="comment">% will stay -1 if none found</span>
+0093 
+0094     <span class="comment">% specify search start position</span>
+0095     <span class="keyword">if</span> nargin &lt; 4 || isempty( startPos )   
+0096         i1 = 0;
+0097     <span class="keyword">else</span>
+0098         i1 =  startPos-1;
+0099     <span class="keyword">end</span>
+0100 
+0101     <span class="comment">%--------------------------------------------------------</span>
+0102     <span class="comment">%-----------find fixation position --------------------------</span>
+0103     <span class="keyword">while</span> (i1 &lt; maxPos) &amp;&amp; (fixIndex==-1)
+0104         <span class="comment">%increment, until start with not missing if necessary</span>
+0105          i1 =  i1+1;     
+0106         <span class="keyword">while</span> (i1 &lt; maxPos) &amp;&amp; (eyeTrack(1,i1)==-1) 
+0107             i1 =  i1+1; 
+0108         <span class="keyword">end</span>
+0109 
+0110         <span class="comment">% select window of windowSize samples, expand if</span>
+0111         <span class="comment">% too much missing data or if last sample is missing</span>
+0112         i2 = 0; <span class="comment">%for expanding window</span>
+0113         window = eyeTrack(:, i1:(i1+windowSize-1));
+0114         missIdx = find( window(1,:) == -1 );
+0115         window( :, missIdx ) = [];
+0116 
+0117         <span class="keyword">while</span> ( (size( window,2) &lt; minTracksToConsider ) || <span class="keyword">...</span>
+0118                     (eyeTrack(1, i1+windowSize-1+i2)==-1)  ) <span class="keyword">...</span>
+0119                      &amp;&amp; (i1+i2)&lt;maxPos  <span class="comment">% do not expand too far</span>
+0120             i2 = i2+1;
+0121             window = eyeTrack(:, i1:(i1+windowSize-1+i2));
+0122             missIdx = find( window(1,:) == -1 );
+0123             window( :, missIdx ) = [];
+0124         <span class="keyword">end</span>
+0125 
+0126         <span class="comment">% determine if fixation based on viewThreshold</span>
+0127         <span class="keyword">if</span> size( window,2) &gt;= minTracksToConsider <span class="comment">%handle missing data</span>
+0128             dist = <a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>( mean(window,2), window); <span class="comment">%euclidean distance from mean to all</span>
+0129             <span class="keyword">if</span> max( dist ) &lt; viewThreshold
+0130                 fixIndex = i1; <span class="comment">%store fixation position</span>
+0131                 fixPosition =  mean(window,2);
+0132             <span class="keyword">end</span>        
+0133         <span class="keyword">end</span>    
+0134 
+0135     <span class="keyword">end</span>
+0136 
+0137     <span class="comment">%---------------------------------------------------------</span>
+0138     <span class="comment">%-----------find fixation duration ( if fixation found)------------</span>
+0139 
+0140     <span class="keyword">if</span>  fixIndex ~= -1
+0141 
+0142         <span class="comment">% initialize for keeping track/convenience</span>
+0143         eyeTrack(:,1:fixIndex-1) = [];
+0144         missingIndices = 1:size(eyeTrack,2);
+0145         knownIndices = missingIndices( eyeTrack(1,:)~=-1);
+0146         missingIndices( eyeTrack(1,:)~=-1) = [];
+0147         eyeTrack( :, missingIndices) = [];  
+0148 
+0149          <span class="comment">% find furthest index within threshold distance</span>
+0150          dist = <a href="calc2Dist.html" class="code" title="function dist = calc2Dist( target, query)">calc2Dist</a>( fixPosition, eyeTrack);
+0151          i1 =1;
+0152          <span class="keyword">while</span>  (i1&lt;=length(dist)) &amp;&amp; (dist(i1) &lt; viewThreshold) 
+0153              i1 = i1+1; 
+0154          <span class="keyword">end</span>;      
+0155          fixLength = knownIndices(i1-1);
+0156     <span class="keyword">end</span>
+0157 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 20-Jan-2016 11:34:09 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
