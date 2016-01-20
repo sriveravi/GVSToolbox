@@ -83,8 +83,7 @@ for i1 = 1:numTrials
         numCorrect = numCorrect + tempNumCorrect;
         numTest = length(testLabels);
         totalNumTest = totalNumTest+numTest;
-        %fprintf('Number of Features Selected by L1-regualrized Logistic Regression classifier: %d (out of %d)\n',nnz(wLogL1(2:end)),dim);
-        %fprintf('Classification error rate on training data for L1-regularied Logistic Regression: %.2f\n',sum(y ~= sign(featureVect*wLogL1))/length(y));
+        % Output things
         fprintf( 'Accuracy = %.2f, (%d/%d), %d Guessed 1; Train # class 1: %d, class 0: %d. \n', ...
             tempNumCorrect/numTest, tempNumCorrect,numTest, length(find(predictedLabels==1)), ...
             length(find(trainLabels==1)), length(find(trainLabels==-1)));

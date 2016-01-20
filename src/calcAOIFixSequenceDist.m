@@ -22,18 +22,11 @@ function [ AOISequence AOIDuration  ] =calcAOIFixSequenceDist( fixStruct, aoiCen
 fixPosVector = fixStruct.fixPosVector;
 fixDurVector = fixStruct.fixDurVector;
 
-% % % initialize some paramters
-% % fixationWinSize = 6;
-% % fixationThreshold = 15;
+% % % initialize some parameters
 if nargin < 4 || isempty( maxFixations )
     maxFixations = 4;
 end
-% % 
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );
 
-% initialize some variables
 numAOI = size(aoiCenter,2);
 numFixation = size( fixPosVector,2);
 AOIOrderList = zeros(numFixation,1); 

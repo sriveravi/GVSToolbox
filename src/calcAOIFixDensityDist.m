@@ -22,15 +22,6 @@ function [ AOIDensity effectivNumFixation]  = calcAOIFixDensityDist( fixStruct, 
 fixPosVector = fixStruct.fixPosVector;
 fixDurVector = fixStruct.fixDurVector;
 
-% % % % initialize some paramters
-% % % fixationWinSize = 6;
-% % % fixationThreshold = 15;
-% % % 
-% % % % scale eye tracks(using default value ), calculate fixations
-% % % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );
-
-
 %calculate AOI fixation density
 numAOI = size(aoiCenter,2);
 numFixation = size( fixPosVector,2);

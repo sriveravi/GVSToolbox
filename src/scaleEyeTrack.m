@@ -28,11 +28,7 @@ existSamples = find(xEye ~= -1 );
 xEye( existSamples) = xEye( existSamples).*imageSize(2);
 
 
-% yEye( existSamples) = abs( yEye( existSamples)-1);  %flip vertically
 yEye( existSamples) = yEye( existSamples).*imageSize(1);
-
-
-
 
 eyeTrack = xEye+1i*yEye;
 

@@ -42,55 +42,48 @@ axis off;
 set(hFig,'renderermode','auto');
 
 
-% for i2 = 1:length(gazeStruct) 
-
-    % scale acoording to image size (if it is within the [0 1] range)    
-    if max(real(leftEyePos)) <= 1
-        leftEyePos = scaleEyeTrack( leftEyePos, size(A(:,:,1)) );
-        if ~isempty( leftOri )
-            leftOri = scaleEyeTrack(leftOri, size(A(:,:,1)) );
-        end
+% scale acoording to image size (if it is within the [0 1] range)    
+if max(real(leftEyePos)) <= 1
+    leftEyePos = scaleEyeTrack( leftEyePos, size(A(:,:,1)) );
+    if ~isempty( leftOri )
+        leftOri = scaleEyeTrack(leftOri, size(A(:,:,1)) );
     end
-    numSamples = length( leftEyePos );
-    
-    % extract fixation information
-    fprintf( 'Finding fixations and saccades... ');
-    fixStruct = codeFixationsDist( leftEyePos, fixMinNumSamples, fixMaxCircleRadius );
-    leftFixation = fixStruct.fixationVector;
-    sacStruct = codeSaccadesDist( leftEyePos, velThreshold, stopThreshold);       
-    leftSaccade =  sacStruct.saccadeVec;    
-    fprintf( 'done!\n');
+end
+numSamples = length( leftEyePos );
 
-    % now plot the eye tracks
-    secCount = 0;
-    for i1 = 2:1:numSamples  % for (near) real time, step by 2
-        % show appropriate image     
-        imshow( A );  % imagesc faster than imshow
-        %show fixations and saccades 
-        if  leftFixation(i1)~=0
-            text(100,60, ['F' int2str(leftFixation(i1))], 'fontsize', 30, 'color', 'b' ); %left fixation            
-        end        
-        if  leftSaccade(i1)~=0
-            text(100,100, ['S' int2str(leftSaccade(i1))], 'fontsize', 30, 'color', 'b' ); %left Saccade
-        end
-        % plot the eye tracks
-        hold on; 
-        plot( leftEyePos(i1), 'b*' );        
-        if ~isempty( leftOri )
-            plot( leftOri(i1), 'w.' );
-        end
-        pause(.02);
-        % update time, assuming sampling at 60Hz
-        if mod( i1, 60 ) == 0
-            % endTime = toc;
-            % fprintf( '%d seconds for 60 frames.\n', endTime-startTime );        
-            % startTime = endTime;                
-            secCount = secCount+1;
-        end
+% extract fixation information
+fprintf( 'Finding fixations and saccades... ');
+fixStruct = codeFixationsDist( leftEyePos, fixMinNumSamples, fixMaxCircleRadius );
+leftFixation = fixStruct.fixationVector;
+sacStruct = codeSaccadesDist( leftEyePos, velThreshold, stopThreshold);       
+leftSaccade =  sacStruct.saccadeVec;    
+fprintf( 'done!\n');
 
-        hold off;
+% now plot the eye tracks
+secCount = 0;
+for i1 = 2:1:numSamples  % for (near) real time, step by 2
+    % show appropriate image     
+    imshow( A );  % imagesc faster than imshow
+    %show fixations and saccades 
+    if  leftFixation(i1)~=0
+        % left fixations
+        text(100,60, ['F' int2str(leftFixation(i1))], 'fontsize', 30, 'color', 'b' ); 
+    end        
+    if  leftSaccade(i1)~=0 
+        %left Saccade
+        text(100,100, ['S' int2str(leftSaccade(i1))], 'fontsize', 30, 'color', 'b' ); 
+    end
+    % plot the eye tracks
+    hold on; 
+    plot( leftEyePos(i1), 'b*' );        
+    if ~isempty( leftOri )
+        plot( leftOri(i1), 'w.' );
+    end
+    pause(.02);
+    % update time, assuming sampling at 60Hz
+    if mod( i1, 60 ) == 0
+        secCount = secCount+1;
     end
 
-% end
-
-
+    hold off;
+end

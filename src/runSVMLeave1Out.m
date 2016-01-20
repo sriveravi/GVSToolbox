@@ -31,12 +31,9 @@ function [ percCorrect w predictedVsTrue ] = runSVMLeave1Out( featureVect, class
 featureVect = featureVect - repmat( mean(featureVect,2), [1,numSamples] );
 featStdev = std( featureVect, 0, 2);
 featureVect( featStdev ~= 0,:) = featureVect( featStdev ~= 0,:)./repmat(featStdev(featStdev ~= 0), [1,numSamples]);
-% featureVect = featureVect./repmat( std( featureVect, 0, 2)+.001, [1,numSamples]);
-
 
 if nargin < 4 || isempty(expLabels)
     expLabels = getLeave1OutLabels( numSamples, numSamplesPerSubj);
-%     expLabels = balanceClasses( expLabels, classLabels );  % even out number samples in each class
 end
 
 numTrials = length(expLabels);

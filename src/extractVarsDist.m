@@ -127,33 +127,15 @@ featureVect = zeros( sum(varParams.dimPerFeat ), numSamples);
     % calcualate latency to first saccade to relevant region
     latencyFirstRelAOISac = calcLatencyRelAOISacDist( sacStruct, aoiPositions, maxDist, relevantAOIs );
     
-    
     % calculate sequence as relevant/irrelevant
     relIrelFixSeq =calcIrrRelSeq( AOISeq, relevantAOIs );
     relIrelSacSeq =calcIrrRelSeq( AOISacSequence, relevantAOIs );
-    
         
     %---------------------------------------------------------------
-    
     % put in output matrix
     featureVect(:,k1) = [ AOIDensity; AOISeq(:); AOIDur(:); relAOIVersusAll; ...
                         distTraveled; numUniqAOIs; latencyFirstRelAOI; ... %histMatrix(:); distTraveled; numUniqAOIs; latencyFirstRelAOI; ...
                         AOISacSequence(:); AOIDensitySac; latencyFirstRelAOISac; ...
                         relIrelFixSeq(:); relIrelSacSeq(:) ];
                     
-
-
-% %     %--------------------------------------------------
-% % % Obsolete
-% % % extract fixation density over grid
-% % %fixScape = calcFixDensity(eyePos, sigma, numYandXSamples); 
-%     
-%     featureVect(:,k1) = AOIDensity;
-%     featureVect(:,k1) = [AOIDensity; fixScape(:)];
-% 
-% %     % Show it
-% %     visualizeTrackSingle(  eyePos, [], 'test' )
-% %     distTraveled      
-
-            
 end

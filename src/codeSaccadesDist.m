@@ -50,7 +50,6 @@ function [  sacStruct  ] = codeSaccadesDist( eyeTrack, velThreshold, stopThresho
     startSacPos(:,k1:end) = []; %clean up unused parts
     endSacPos(:,k1:end) = [];
     
-    
     sacStruct.saccadeVec = saccadeVec;
     sacStruct.startSacPos = startSacPos;
     sacStruct.endSacPos = endSacPos;
@@ -63,12 +62,7 @@ end
  
 function [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThreshold, stopThreshold, startPos )
 
-% % velThreshold = 20;
-% % stopThreshold = 5;
-% % eyeTrack = eyePos;
-% % startPos = [];
 
-   
     %--------------- initialize -----------------------
     windowSize = 2;
     minTracksToConsider = 2;
@@ -105,11 +99,7 @@ function [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThre
         window = eyeTrack(:, i1:(i1+windowSize-1));        
         missIdx = find( window(1,:) == -1 );
         window( :, missIdx ) = [];
-        % old way
-%         window( window==-1) = [];
-                       
         window = reshape( window, 2,[]);
-        
         
         while ( (size( window,2) < minTracksToConsider ) || ...
                     (eyeTrack(1, i1+windowSize-1+i2)==-1)  ) ...
@@ -118,8 +108,6 @@ function [ sacIdxStart, sacIdxEnd, peakVelIdx] = findSaccade(  eyeTrack, velThre
             window = eyeTrack(:, i1:(i1+windowSize-1+i2));
             missIdx = find( window(1,:) == -1 );
             window( :, missIdx ) = [];
-        % old way             
-%             window( window==-1) = [];
         end
 
         % find start position, and end position of saccade based on a

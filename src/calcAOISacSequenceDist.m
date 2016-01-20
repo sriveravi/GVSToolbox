@@ -22,17 +22,8 @@ if nargin < 4 || isempty( maxSaccades )
     maxSaccades = 3;
 end
 
-
-% % saccadeVec = sacStruct.saccadeVec;
-% % startSacPos = sacStruct.startSacPos;
-endSacPos = sacStruct.endSacPos;
-
-
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % [ saccadeVec startSacPos endSacPos  ] = codeSaccades( eyePos);
-
 % initialize some variables
+endSacPos = sacStruct.endSacPos;
 numAOI = size(aoiCenter,2);
 numSaccades = size( endSacPos,2);
 AOIOrderList = zeros(numSaccades,1); 

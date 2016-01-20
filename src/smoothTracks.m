@@ -14,11 +14,6 @@
 
 function dataStruct = smoothTracks( dataStruct, smoothParam )
 
-% %     smoothParam = .0003;  %  to increase smoothness, lower the number
-% %                       % 1000 empirically works on the up-scaled eye track data
-% %                       % in [.0001 , .0005] empirically works on the data in [ 0 1 ]
-
-
 if nargin < 2
     smoothParam = [];  % making empty will set to default in the filterEyeTrackInfant function
 end

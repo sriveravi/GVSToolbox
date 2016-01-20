@@ -36,8 +36,6 @@ accuracy = zeros( dim,1); %,numTrials);
 featureVect = featureVect - repmat( mean(featureVect,2), [1,numSamples] );
 featStdev = std( featureVect, 0, 2);
 featureVect( featStdev ~= 0,:) = featureVect( featStdev ~= 0,:)./repmat(featStdev(featStdev ~= 0), [1,numSamples]);
-% featureVect = featureVect./repmat( std( featureVect, 0, 2)+.001, [1,numSamples]);
-
 
 for i1 = 1:numTrials 
     
@@ -56,14 +54,7 @@ for i1 = 1:numTrials
         if var( trainFeatures(i2,:)) < 1e-5 || ...
             var( trainFeatures(i2,trainLabels==0))< 1e-5 || ...
             var( trainFeatures(i2,trainLabels==1))< 1e-5 ,        
-            
-                % do nothing
-                %accuracy(i2,i1) = 0;
         else
-%             var( trainFeatures(i2,:))
-%             var( trainFeatures(i2,trainLabels==0))
-%             var( trainFeatures(i2,trainLabels==1))
-            
             nb = NaiveBayes.fit(trainFeatures(i2,:)', trainLabels', 'Prior', 'uniform');
             estimate = nb.predict(testFeatures(i2,:)');          
             accuracy(i2) = accuracy(i2) + sum( estimate == testLabels'); %/length(testLabels);
@@ -76,24 +67,9 @@ for i1 = 1:numTrials
 %      belongs to. training and class must have the same number of rows.
 
 % 'Prior' – The prior probabilities for the classes, specified as one of the following:
-% 
-% 'empirical' (default)	fit estimates the prior probabilities from the relative frequencies of the classes in training.
-% 'uniform'
+% 'empirical' (default)	fit estimates the prior probabilities from the relative frequencies of the classes in training. 
 
 end
-
-% % % % sort variables in order best to worst
-% % % [ accuracy bestToWorst] = sort( accuracy, 1, 'descend');
-% % % %feature selection
-% % % bestVariables = bestToWorst(1:topVarsToSearch,:);
-% % % bestVariables = bestVariables(:);
-% % % uniqVars = unique( sort(bestVariables) );
-% % % lengthList = zeros( length(uniqVars),1);
-% % % for i1 = 1:length(uniqVars)
-% % %    lengthList(i1) = length( find( bestVariables == uniqVars(i1)));    
-% % % end
-% % % [ val idx] = sort( lengthList , 'descend');
-
 
 % sort variables in order best to worst
 [ accuracy bestToWorst] = sort( accuracy, 1,'descend');

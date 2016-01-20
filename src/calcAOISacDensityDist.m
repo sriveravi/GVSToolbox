@@ -15,16 +15,7 @@
 function [AOIDensity ] =calcAOISacDensityDist( sacStruct, aoiCenter, maxDist ) 
 
 
-
-
-% % saccadeVec = sacStruct.saccadeVec;
-% % startSacPos = sacStruct.startSacPos;
 endSacPos = sacStruct.endSacPos;
-
-
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % [ saccadeVec startSacPos endSacPos  ] = codeSaccades( eyePos);
 
 %calculate AOI fixation density
 numAOI = size(aoiCenter,2);

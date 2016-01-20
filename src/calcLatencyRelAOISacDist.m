@@ -21,12 +21,6 @@ saccadeVec = sacStruct.saccadeVec;
 % % startSacPos = sacStruct.startSacPos;
 endSacPos = sacStruct.endSacPos;
 
-
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos ] = scaleEyeTrack( eyePos,  [] ); 
-% % [ saccadeVec startSacPos endSacPos ] = codeSaccades( eyePos);
-
-
 numFixation = size(endSacPos,2);
 numSamples = length( saccadeVec );
 latency = numSamples;

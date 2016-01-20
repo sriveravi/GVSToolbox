@@ -19,16 +19,6 @@ function latency =calcLatencyRelAOIFixDist( fixStruct, aoiCenter, maxDist, AOIsO
 fixPosVector = fixStruct.fixPosVector;
 fixationVector = fixStruct.fixationVector;
 
-
-% % % initialize some paramters
-% % fixationWinSize = 6;
-% % fixationThreshold = 15;
-% % 
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos ] = scaleEyeTrack( eyePos,  [] ); 
-% % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );
-
-
 numFixation = size(fixPosVector,2);
 numSamples = length( fixationVector );
 latency = numSamples;
@@ -44,7 +34,4 @@ for i1 = 1:numFixation
 
 end
 
-
-
-    
 

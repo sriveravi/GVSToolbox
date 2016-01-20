@@ -23,14 +23,9 @@ function [bestVariables bestToWorst p ] = sortVariablesANOVA( featureVect, ...
 if nargin < 4 || isempty( topVarsToKeep)
     topVarsToKeep = 10;
 end
-% if nargin < 5 || isempty( topVarsToSearch )
-%     topVarsToSearch = topVarsToKeep;
-% end
 
 % leave one subject out cross validation
 [ dim numSamples] = size( featureVect);
-% expLabels = getLeave1OutLabels( numSamples, numSamplesPerSubj);
-% numTrials = length(expLabels);
 p = zeros( dim,1);
 h = zeros(dim,1);
 

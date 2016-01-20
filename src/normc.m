@@ -5,7 +5,8 @@
 %   Cognitive Science Lab (CBCSL).
 % 
 % Contact: Samuel Rivera (sriveravi@gmail.com)
-% 
+%
+% Notes: Normalizes columns to unit length
 
 function Y = normc( X )
 

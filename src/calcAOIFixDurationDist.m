@@ -1,6 +1,6 @@
 % calculate fixation density at the AOIs
 % 
-% Syntax: [ AOIDensity effectivNumFixation]  = calcAOIFixDensityDist( fixStruct, aoiCenter, maxDist )
+% Syntax: [ AOIDensity effectivNumFixation]  = calcAOIFixDurationDist( fixStruct, aoiCenter, maxDist )
 % 
 % Inputs:
 %  fixStruct: struct returned by codeFixations
@@ -13,7 +13,7 @@
 % 
 % Outputs:
 %  AOIDensity: vector of number of time spent at particular AOI
-%                        the last entry is time outside of those AOIs
+%               the last entry is time outside of those AOIs
 
 
 function [ AOIDensity effectivNumFixation]  = calcAOIFixDurationDist( fixStruct, aoiCenter, maxDist ) 
@@ -22,15 +22,6 @@ function [ AOIDensity effectivNumFixation]  = calcAOIFixDurationDist( fixStruct,
 % fixationVector P
 fixPosVector = fixStruct.fixPosVector;
 fixDurVector = fixStruct.fixDurVector;
-
-% % % % initialize some paramters
-% % % fixationWinSize = 6;
-% % % fixationThreshold = 15;
-% % % 
-% % % % scale eye tracks(using default value ), calculate fixations
-% % % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );
-
 
 %calculate AOI fixation density
 numAOI = size(aoiCenter,2);
@@ -48,10 +39,5 @@ for i1 = 1:numFixation
         AOIDensity( end) =  AOIDensity( end) + fixDurVector(i1);
     end
 end
-
-% % normalize so the sum is 1
-% if effectivNumFixation > 0
-%     AOIDensity = AOIDensity/sum( AOIDensity);
-% end
 
 

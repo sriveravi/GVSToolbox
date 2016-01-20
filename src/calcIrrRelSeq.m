@@ -34,6 +34,3 @@ for i1 = 1:numInSeq
 end
 
 
-
-    
-

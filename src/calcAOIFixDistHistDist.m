@@ -24,15 +24,6 @@ if nargin < 5 || isempty(imRange)
     imRange = [1024; 1280];
 end
 
-% % % initialize some paramters
-% % fixationWinSize = 6;
-% % fixationThreshold = 15;
-% % 
-% % % scale eye tracks(using default value ), calculate fixations
-% % [ eyePos imRange] = scaleEyeTrack( eyePos,  [] ); 
-% % [ fixationVector P ]  = codeFixations( eyePos, fixationWinSize, fixationThreshold );
-
-
 % initialize some things
 numAOI = size(aoiCenter,2);
 numFixation = size( fixPosVector,2);

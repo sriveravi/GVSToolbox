@@ -38,7 +38,7 @@ while(known(2)-known(1) >1) %make sure not a single thing, so we can calculate t
     known(1) = [];
 end
 
-% I need to identify the large gaps of missing eye tracks
+% Identify the large gaps of missing eye tracks
 % don't interpolate the large missing gaps
 missingWindow = 4;
 interpThese = ones( 1, length( eyeTrack ) );
@@ -73,22 +73,7 @@ for i1 = 1:length( startInterp )
     eyeTrack(startInterp(i1):endInterp(i1),:) = eyeTrack1;
 end
 
-%old way, without chopping eye track into uninterrupted blocks
-% if ~isempty(known) && known(1) > 1
-%     [eyeTrack1]=kalmanMissingData( eyeTrack(known(1):end,:)', t(known(1):end), smoothParam)';
-%     eyeTrack = [ eyeTrack(1:known(1)-1,:); eyeTrack1 ];
-% else
-%     [eyeTrack]=kalmanMissingData( eyeTrack', t, smoothParam)';
-% end
-
-
 eyeTrack(isnan(eyeTrack)) = -1;
 eyeTrack = eyeTrack(:,1)+1i*eyeTrack(:,2);
 
 
-% visualizeTrackSingle(  eyeTrack, oriEyes, 'test' )
-
-
- 
-
- 

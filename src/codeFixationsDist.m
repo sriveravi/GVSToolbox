@@ -1,4 +1,3 @@
-% identify fixations
 % June 22, 2011
 % Notes: This function codes the eye track sequence according to the fixations
 %   It checks to make sure that the fixation is not immediately at start of
@@ -86,7 +85,7 @@ function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSiz
     %--------------- initialize -----------------------
 
     minTracksToConsider = floor( 2/3 * windowSize ); % integer, specifying minimum samples
-                                                                                 %   tracked when calculating fixation                                                                        
+                        %   tracked when calculating fixation 
     eyeTrack =  [ real( eyeTrack(:)) imag(eyeTrack(:)) ]'; % in [ x x ... x; y y ... y ]
     maxPos = size( eyeTrack,2) - windowSize+1;
     fixPosition = -1; fixLength = -1;
@@ -101,9 +100,7 @@ function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSiz
 
     %--------------------------------------------------------
     %-----------find fixation position --------------------------
-
     while (i1 < maxPos) && (fixIndex==-1)
-
         %increment, until start with not missing if necessary
          i1 =  i1+1;     
         while (i1 < maxPos) && (eyeTrack(1,i1)==-1) 
@@ -116,9 +113,7 @@ function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSiz
         window = eyeTrack(:, i1:(i1+windowSize-1));
         missIdx = find( window(1,:) == -1 );
         window( :, missIdx ) = [];
-        % old way
-%         window( window==-1) = [];
-%         window = reshape( window, 2,[]);
+
         while ( (size( window,2) < minTracksToConsider ) || ...
                     (eyeTrack(1, i1+windowSize-1+i2)==-1)  ) ...
                      && (i1+i2)<maxPos  % do not expand too far
@@ -126,18 +121,10 @@ function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSiz
             window = eyeTrack(:, i1:(i1+windowSize-1+i2));
             missIdx = find( window(1,:) == -1 );
             window( :, missIdx ) = [];
-            % old way
-    %         window( window==-1) = [];
-    %         window = reshape( window, 2,[]);
         end
 
         % determine if fixation based on viewThreshold
-
-        %         window = reshape( window, 2,[]);
         if size( window,2) >= minTracksToConsider %handle missing data
-            
-            %         dist = ( repmat(mean(window,2),1,size(window,2)) - window);
-            %         dist = sqrt(sum(dist.^2,1));        
             dist = calc2Dist( mean(window,2), window); %euclidean distance from mean to all
             if max( dist ) < viewThreshold
                 fixIndex = i1; %store fixation position
@@ -166,7 +153,5 @@ function [fixIndex, fixPosition, fixLength] = findFixation(  eyeTrack, windowSiz
              i1 = i1+1; 
          end;      
          fixLength = knownIndices(i1-1);
-
     end
-
 end

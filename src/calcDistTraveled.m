@@ -25,9 +25,5 @@ for i1 = 2:(numSamples)
 end
 dist(isMissing) = 0;
 
-
-
-
-    
 distTraveled = sum(dist);
     

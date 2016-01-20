@@ -39,10 +39,6 @@ for i1 = 1:numBest
         subWhereItIs(i1) = bestIdx(i1);
     end   
     
-    
-%     i1
-%     subWhereItIs(i1)
-    
     %output very nicely which variable
     if strcmp( varParams.dimNames{whereItIs(i1)}, 'AOIFixationSeq' ) %fixation sequence        
         whichPos = mod( subWhereItIs(i1), numAOIs);

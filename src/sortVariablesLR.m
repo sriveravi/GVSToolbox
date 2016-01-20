@@ -38,7 +38,6 @@ bestToWorst = zeros( topVarsToSearch, numTrials);
 featureVect = featureVect - repmat( mean(featureVect,2), [1,numSamples] );
 featStdev = std( featureVect, 0, 2);
 featureVect( featStdev ~= 0,:) = featureVect( featStdev ~= 0,:)./repmat(featStdev(featStdev ~= 0), [1,numSamples]);
-% featureVect = featureVect./repmat( std( featureVect, 0, 2)+.001, [1,numSamples]);
 
 % init some thing for LR
 featureVect = [ones(numSamples,1) featureVect']'; % Add Bias element to features (at top)
@@ -60,11 +59,6 @@ for i1 = 1; %:numTrials
     trainLabels( :, trainLabels==2) = [];
     funObj = @(w)LogisticLoss(w,trainFeatures',trainLabels'); % LR objective
     
-%     testLabels = classLabels(:,expLabels(i1).test);
-%     testFeatures = featureVect(:,expLabels(i1).test);
-%     testFeatures( :, testLabels==2) = [];
-%     testLabels( :, testLabels==2) = [];
-    
     % do the tests on each feature
     k1 = 0;
     while nnz( w) < topVarsToSearch && k1 < 500
@@ -74,10 +68,6 @@ for i1 = 1; %:numTrials
         lambda(1) = 0; % Do not penalize bias variable
         w = L1GeneralProjection(funObj,w,lambda, options );
         lambdaScalar = lambdaScalar/1.1;
-        
-        % % testing 
-        % predictedLabels = sign(testFeatures'*w);
-        % tempNumCorrect = sum(testLabels' == predictedLabels);        
     end
     
     % sort by most important, and put in the matrix
@@ -86,16 +76,6 @@ for i1 = 1; %:numTrials
 %     bestToWorst( :,i1) = wIdx(1:topVarsToSearch);
     
 end
-
-% %feature selection
-% bestVariables = bestToWorst(:);
-% uniqVars = unique( sort(bestVariables) );
-% lengthList = zeros( length(uniqVars),1);
-% for i1 = 1:length(uniqVars)
-%    lengthList(i1) = length( find( bestVariables == uniqVars(i1)));    
-% end
-% [ val idx] = sort( lengthList , 'descend');
-
 
 % remove redundancies
 featureVect(1,:) = [];  %to remove that unit offset
