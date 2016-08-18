@@ -3,7 +3,7 @@ GVS Quick Start Guide
 ===
 
 
-This MATLAB toolbox is meant to identify the relevant variables of the eye gaze. Copyright 2012, Samuel Rivera, Catherine Best, Hyungwook Yim, Aleix M. Martinez, Vladimir Sloutsky, and Dirk B. Walther at The Ohio State University.
+This MATLAB toolbox is meant to identify the relevant variables of the eye gaze.  Those variables best distinguish two experiment groups or conditions. Copyright 2012, Samuel Rivera, Catherine Best, Hyungwook Yim, Aleix M. Martinez, Vladimir Sloutsky, and Dirk B. Walther at The Ohio State University.
 
 This work was presented at CogSci 2012 in Japan. Please cite:
 
@@ -15,18 +15,20 @@ Rivera, S., Best, C., Yim, H., Martinez, A., Sloutsky, V., & Walther, D. (2012).
 ## Installation
 
 #### Non-coders    
-    1. Click "download zip" at top of this GitHub page.
-    2. Unzip downloaded file.
-    3. Open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at command prompt.
-    4. In the dialog that pops up, click "Add with subfolder..."
-    5. Select the "GVSToolbox" directory, then click open.
-    6. Click save.
+1. Click "download zip" at top of this GitHub page.
+2. Unzip downloaded file.
+3. Open MATLAB's path tool by clicking "Path tool" button or typing "pathtool" at command prompt (where you see the ">>" ).
+4. In the dialog that pops up, click "Add with subfolder..."
+5. Select the "GVSToolbox" directory, then click open.
+6. Click save.
 
 #### Coders
-    1. fork or clone
-    2. In Matlab, navigate to "GVSToolbox" then run:
 
-    >> addpath(genpath(pwd));
+1. fork or clone
+2. In Matlab, navigate to "GVSToolbox" then run:
+
+
+    addpath(genpath(pwd));
 
 #### Installation Notes
 * Libraries tested on linux and windows 64 bit.  libsvm (for SVM) may require additional steps to compile for your system.  Instructions inside (ExtraToolboxes). Optionally, just don't use SVM classifier.
@@ -36,20 +38,39 @@ Rivera, S., Best, C., Yim, H., Martinez, A., Sloutsky, V., & Walther, D. (2012).
 
 ---
 ## Testing
-    >> exampleEasy
+Run the following script to run through a battery of tasks with the included example files.
+
+    exampleEasy;
+
+You should get output that looks like this at command prompt:
+
+    Var 1 is feat 1 of totalDistTraveled
+    Var 2 is feat 1 of latencyFirstRelAOIFixation
+    Var 3 is feat 1 of AOIFixDensity
+    Accuracy = 0.25, (1/4), 0 Guessed 1; Train # class 1: 0, class 0: 1.
+    Accuracy = 0.00, (0/1), 1 Guessed 1; Train # class 1: 3, class 0: 1.
+    Finding fixations and saccades... done!   
+
+Then you should see a video of the actual gaze superimposed on the stimulus image    
+
+![gaze visualize](./Screenshots/GVSVis.png "Gaze Visualization")
 
 ## Graphical User Interface (GUI)
-    >> simpleGUI
+Open the GUI by running the script:
+
+    simpleGUI;
+
 
 ![gvs gui](./Screenshots/GVSGUI.png "GVS GUI")
 
-#### Visualization
-Load source file and select image file then click play to visualize gaze over display. Visualization looks like this, but video:
-![gaze visualize](./Screenshots/GVSVis.png "Gaze Visualization")
 
-## Data Format
+
+## Data Source Format
+* See exampleTable.txt for an example.
 * Data source file in following tab delimited format.
-* Gaze coordinates assumed scaled in [0,1].
+* Gaze coordinates assumed scaled in [0,1].  Missing coordinates set as -1.
+* Label should be 0 or 1, corresponding to the different experiment groups.  The toolbox identifies the gaze features that separate those groups.
+
 ![data file](./Screenshots/dataExample.png "data source")
 ---
 ## Documentation
@@ -59,27 +80,63 @@ Load source file and select image file then click play to visualize gaze over di
 * Supplement.pdf for detailed explanation of machine learning methods and parameter choices.
 
 ##  Examples
+All necessary example files are included to get you started with the toolbox.  For testing general functionality, run
 
-#### Source
-See exampleTable.txt for an example data source file.  
+    exampleEasy;
 
-#### General functionality
-    >> exampleEasy
+#### Load data source file 'exampleTable.txt'
 
-1. Load eye data, visualize, and extract variables
-2. Identify relevant variables (and read them out)
-3. Validate the variables
+    dataStructRaw = loadFromTable( 'exampleTable.txt' );
 
-#### Graphical interface
-    >> simpleGUI
+#### Run a Kalman filter on noisy gaze data
+
+    dataStruct = smoothTracks( dataStructRaw );
+
+#### Visualize noisy and filtered gaze over display image
+
+    varParams.imageSize = [1024; 1280]; % set image size (h,width)
+    imgFile = 'AOI_Dense_Test.bmp';
+    eyePos = dataStruct.trackCell{1};
+    eyePosUnfilt  = dataStructRaw.trackCell{1};
+    visualizeTrackDist(  eyePos, eyePosUnfilt, imgFile, varParams);
 
 
-#### Sample output:
+#### Extract gaze variables (fixatons/saccades/dwell times)
 
-    Top Naive Bayes selected variables:
-    Var 1 is feat 1 of AOIFixDensity
-    Var 2 is feat 2 of AOIFixDensity
-    Var 3 is feat 3 of AOIFixDensity
-    Var 4 is feat 4 of AOIFixDensity
-    Var 5 is feat 7 of AOIFixDensity
-    Exported to file variablesTable.txt
+    varParams.imageSize = [1024; 1280]; % set image size (h,width)
+    varParams.numFixationInSeq = 5;  % keep up to 5 fixations
+    aoiPositions = [ 20, 40;  % x1, x2
+                     40, 80]; % y1, y2  
+    aoiRadius = 30;  % 30 pixel radius for AOI cicular region
+    relevantAOIs = 1;  % AOI (x1,y1) is relevant AOI
+    [ featureVect, varParams ] = extractVarsDist( dataStruct.trackCell, aoiPositions, aoiRadius, relevantAOIs, varParams );
+
+
+#### Identify relevant variables (those that separate experiment conditions)
+
+    numWanted = 5;   % number variables to keep
+
+    % Using Sparse Logistic Regression
+    [ bestVariablesLR ] = sortVariablesLR( featureVect, dataStruct.allLabels, numWanted );
+
+    % Using Naiive Bayes
+    [ bestVariablesBayes] = sortVariablesNB( featureVect, dataStruct.allLabels, dataStruct.sampsPerSubj, numWanted );             
+
+
+#### Output best variables in human readable format
+
+    describeVariables( varParams, bestVariablesLR );   
+
+
+#### Validate using classifier
+
+    % LDA
+    [ percCorrectLDA, wLDA ] = runLDALeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
+
+    % SVM using libSVM
+    [ percCorrectSVM, wSVM  ] = runSVMLeave1Out( featureVect(bestVariablesLR,:), dataStruct.allLabels, dataStruct.sampsPerSubj );
+
+
+#### Output top variables for data analysis
+
+    exportToTable( dataStruct, featureVect(bestVariablesLR,:), 'outFile.txt' );

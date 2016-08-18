@@ -268,7 +268,7 @@ for index = trlIdx;
     else
         leftOri = [];
     end
-    visualizeTrackDist(  leftEyePos, leftOri, imgFile, handles.dataStruct.varParams,  handles.dataStruct.varParams.imageSize )
+    visualizeTrackDist(  leftEyePos, leftOri, imgFile, handles.dataStruct.varParams )
 end
 
 function pNum_Callback(hObject, eventdata, handles)

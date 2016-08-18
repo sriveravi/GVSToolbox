@@ -1,4 +1,4 @@
-subject	trial	gazeX	gazeY	label
+ subject	trial	gazeX	gazeY	label
 1	1	-1	-1	1
 1	1	-1	-1	1
 1	1	-1	-1	1

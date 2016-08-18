@@ -17,8 +17,19 @@ function dataStruct = loadFromTable( tableFile )
 
 % tableFile = 'exampleTable.txt';
 
-% load 
-s = tdfread( tableFile );
+% % load (assumes statistics toolbox)
+% s = tdfread( tableFile );
+
+% load fix
+rawTable = dlmread( tableFile, '\t',1,0);
+s.subject = rawTable(:,1);
+s.trial = rawTable(:,2);
+s.gazeX = rawTable(:,3);
+s.gazeY = rawTable(:,4);
+s.label = rawTable(:,5);
+
+
+
 trackCell = cell(1, max(s.subject)*max(s.trial));
 allLabels = zeros( 1, max(s.subject)*max(s.trial));
 

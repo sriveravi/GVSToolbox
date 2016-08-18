@@ -2,10 +2,11 @@
 
 
 % load up data
-dataStruct = loadFromTable( 'exampleTable.txt' );
+dataStructRaw = loadFromTable( 'exampleTable.txt' );
 
 % smooth and interpolate
-dataStruct = smoothTracks( dataStruct );
+dataStruct = smoothTracks( dataStructRaw );
+
 
 % extract variables
 varParams.imageSize = [1024; 1280]; % set image size (h,width)
@@ -25,7 +26,7 @@ numWanted = 5;
                 dataStruct.sampsPerSubj, numWanted );             
 
 % automatically find labels           
-labels = autoLabel( featureVect ) ;           
+% labels = autoLabel( featureVect ) ;           
             
             
 % output best variables
@@ -41,4 +42,9 @@ describeVariables( varParams, bestVariablesLR );
 exportToTable( dataStruct, featureVect(bestVariablesLR,:), 'outTemp.txt' )
 
 
+% visualize 
+imgFile = 'AOI_Dense_Test.bmp';
+eyePos = dataStruct.trackCell{1};
+eyePosUnfilt  = dataStructRaw.trackCell{1};
+visualizeTrackDist(  eyePos, eyePosUnfilt, imgFile, varParams);
 

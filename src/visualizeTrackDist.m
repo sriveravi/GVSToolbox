@@ -11,7 +11,7 @@
 %           fixations (using IDT algorithm) and saccades. See lines 20-24
 %           for the possible parameters
 
-function visualizeTrackDist(  leftEyePos, leftOri, imgFile, varParams, stimSize )
+function visualizeTrackDist(  leftEyePos, leftOri, imgFile, varParams )
 
 
 % default fixation paramters
@@ -20,12 +20,14 @@ if ~isfield( 'varParams', 'fixMaxCircleRadius'); varParams.fixMaxCircleRadius = 
 % identify saccades as exceeding a certain velocity, then slow down
 if ~isfield( 'varParams', 'velThreshold'); varParams.velThreshold = 20; end
 if ~isfield( 'varParams', 'stopThreshold'); varParams.stopThreshold = 8; end
+if ~isfield( 'varParams', 'imageSize'); varParams.imageSize = [1024; 1280]; end
+
 
 fixMinNumSamples = varParams.fixMinNumSamples;
 fixMaxCircleRadius = varParams.fixMaxCircleRadius;
 velThreshold = varParams.velThreshold;
 stopThreshold = varParams.stopThreshold;
-
+stimSize = varParams.imageSize;
 
 % load stimulus image 
 if isempty(imgFile)
